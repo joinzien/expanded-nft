@@ -1,6 +1,7 @@
 # New Aura Member NFT
 
 ### What are these contracts?
+
 1. `SingleEditionMintable`
    Each edition is a unique contract.
    This allows for easy royalty collection, clear ownership of the collection, and your own contract 🎉
@@ -13,9 +14,9 @@
 ### How do I create a new contract?
 
 ### Directly on the blockchain:
+
 1. Find/Deploy the `SingleEditionMintableCreator` contract
 2. Call `createEdition` on the `SingleEditionMintableCreator`
-
 
 ### How do I create a new edition?
 
@@ -39,7 +40,6 @@ Now that you have a edition, there are multiple options for lazy-minting and sal
 2. To allow certain accounts to mint `setApprovedMinter(address, approved)`.
 3. To mint yourself to a list of addresses you can call `mintEditions(addresses[])` to mint an edition to each address in the list.
 
-
 ### Install
 
 `yarn install`
@@ -49,6 +49,7 @@ Now that you have a edition, there are multiple options for lazy-minting and sal
 `yarn test`
 
 ### Deploying:
+
 (Replace network with desired network)
 
 `hardhat deploy --network rinkeby`
@@ -56,4 +57,3 @@ Now that you have a edition, there are multiple options for lazy-minting and sal
 ### Verifying:
 
 `hardhat sourcify --network rinkeby && hardhat etherscan-verify --network rinkeby`
-
