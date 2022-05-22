@@ -9,7 +9,7 @@ import {
   SingleEditionMintable,
 } from "../typechain";
 
-describe("SingleEditionMintable", () => {
+describe("Membership", () => {
   let signer: SignerWithAddress;
   let signerAddress: string;
   let dynamicSketch: SingleEditionMintableCreator;
