@@ -53,14 +53,6 @@ describe("SingleEditionMintable", () => {
         editionResult
       )) as SingleEditionMintable;
     });
-    it("allows user burn", async () => {
-      await minterContract.mintEdition(await signer1.getAddress());
-      expect(await minterContract.ownerOf(1)).to.equal(
-        await signer1.getAddress()
-      );
-      await minterContract.connect(signer1).burn(1);
-      await expect(minterContract.ownerOf(1)).to.be.reverted;
-    });
     it("does not allow re-initialization", async () => {
       await expect(
         minterContract.initialize(
