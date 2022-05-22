@@ -53,25 +53,13 @@ describe("Membership", () => {
         editionResult
       )) as SingleEditionMintable;
     });
-    it("does not allow re-initialization", async () => {
-      await expect(
-        minterContract.initialize(
-          signerAddress,
-          "test name",
-          "SYM",
-          "description",
-          "animation",
-          "0x0000000000000000000000000000000000000000000000000000000000000000",
-          "uri",
-          "0x0000000000000000000000000000000000000000000000000000000000000000",
-          12,
-          12
-        )
-      ).to.be.revertedWith("Initializable: contract is already initialized");
-      await minterContract.mintEdition(await signer1.getAddress());
-      expect(await minterContract.ownerOf(1)).to.equal(
-        await signer1.getAddress()
-      );
+    it("returns interfaces correctly", async () => {
+      // ERC2891 interface
+      expect(await minterContract.supportsInterface("0x2a55205a")).to.be.true;
+      // ERC165 interface
+      expect(await minterContract.supportsInterface("0x01ffc9a7")).to.be.true;
+      // ERC721 interface
+      expect(await minterContract.supportsInterface("0x80ac58cd")).to.be.true;
     });
   });
 });
