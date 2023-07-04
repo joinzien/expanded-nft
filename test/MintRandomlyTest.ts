@@ -72,7 +72,7 @@ describe("Mint randomly", () => {
     expect(await minterContract.totalSupply()).to.be.equal(1);
     expect(await minterContract.getAllowListMintLimit()).to.be.equal(2);
     expect(await minterContract.getGeneralMintLimit()).to.be.equal(1);
-    expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(0);  
+    expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(9);  
   });
 
   it("Mint via mintEdition", async () => {
@@ -83,7 +83,7 @@ describe("Mint randomly", () => {
     expect(await minterContract.totalSupply()).to.be.equal(1);
     expect(await minterContract.getAllowListMintLimit()).to.be.equal(2);
     expect(await minterContract.getGeneralMintLimit()).to.be.equal(1);
-    expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(0);  
+    expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(9);  
   });
 
   it("Mint via mintEditions", async () => {
@@ -94,7 +94,7 @@ describe("Mint randomly", () => {
     expect(await minterContract.totalSupply()).to.be.equal(1);
     expect(await minterContract.getAllowListMintLimit()).to.be.equal(2);
     expect(await minterContract.getGeneralMintLimit()).to.be.equal(1);
-    expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(0);  
+    expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(9);  
   });
 
   it("Mint via mintMultipleEditions", async () => {
@@ -105,7 +105,7 @@ describe("Mint randomly", () => {
     expect(await minterContract.totalSupply()).to.be.equal(1);
     expect(await minterContract.getAllowListMintLimit()).to.be.equal(2);
     expect(await minterContract.getGeneralMintLimit()).to.be.equal(1);
-    expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(0);  
+    expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(9);  
   });
 
   it("Can mint zero cost", async () => {
@@ -118,7 +118,7 @@ describe("Mint randomly", () => {
     expect(await minterContract.totalSupply()).to.be.equal(1);
     expect(await minterContract.getAllowListMintLimit()).to.be.equal(2);
     expect(await minterContract.getGeneralMintLimit()).to.be.equal(1);
-    expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(0);  
+    expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(9);  
   });
 
   it("Minter only has payment", async () => {
@@ -129,7 +129,7 @@ describe("Mint randomly", () => {
     expect(await minterContract.totalSupply()).to.be.equal(1);
     expect(await minterContract.getAllowListMintLimit()).to.be.equal(2);
     expect(await minterContract.getGeneralMintLimit()).to.be.equal(1);
-    expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(0); 
+    expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(9); 
   });
 
   it("Minter only has payment, does not match the mint price", async () => {
@@ -140,7 +140,7 @@ describe("Mint randomly", () => {
     expect(await minterContract.totalSupply()).to.be.equal(0);
     expect(await minterContract.getAllowListMintLimit()).to.be.equal(2);
     expect(await minterContract.getGeneralMintLimit()).to.be.equal(1);
-    expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(1);  
+    expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(10);  
   });
 
   it("General public can not mint while the drop is not for sale", async () => {
