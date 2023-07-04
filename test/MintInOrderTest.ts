@@ -135,7 +135,7 @@ describe("Mint in order", () => {
       expect(await minterContract.ownerOf(3)).to.be.equal(signerAddress);
       expect(await minterContract.ownerOf(4)).to.be.equal(signerAddress);          
       expect(await minterContract.getMintLimit(artistAddress)).to.be.equal(3); 
-      expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(1);     
+      expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(8);     
       expect(await minterContract.isReserved(1)).to.be.equal(true);
       expect(await minterContract.whoReserved(1)).to.be.equal(artistAddress); 
       expect(await minterContract.isReserved(2)).to.be.equal(true);
