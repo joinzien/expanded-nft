@@ -191,7 +191,12 @@ describe("Mint randomly", () => {
   it("The owner can not mint when not on the allow list", async () => {
     await minterContract.setAllowedMinter(1);
 
-    await expect(minterContract.mintEditions([signerAddress], { value: ethers.utils.parseEther("0.1") })).to.be.revertedWith("Needs to be an allowed minter");
+    await minterContract.mintEditions([signerAddress], { value: ethers.utils.parseEther("0.1") });
+
+    expect(await minterContract.totalSupply()).to.be.equal(1);
+    expect(await minterContract.getAllowListMintLimit()).to.be.equal(2);
+    expect(await minterContract.getGeneralMintLimit()).to.be.equal(1);
+    expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(1);      
   });
 
   it("The owner list member can mint when on the allow list", async () => {
