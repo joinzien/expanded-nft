@@ -537,7 +537,9 @@ contract ExpandedNFT is
             return _pricing.allowListMintLimit;
         } else if (_pricing.whoCanMint == WhoCanMint.ANYONE) {
             return _pricing.generalMintLimit;
-        } 
+        } else if (msg.sender == owner()) {
+            return numberCanMint();
+        }
             
         return 0;       
     }
