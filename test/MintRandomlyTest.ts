@@ -218,6 +218,8 @@ describe("Mint randomly", () => {
   }); 
 
   it("General mint limit", async () => {
+    await minterContract.setAllowedMinter(0);
+
     expect(await minterContract.getAllowListMintLimit()).to.be.equal(2);
     expect(await minterContract.getGeneralMintLimit()).to.be.equal(1);
     expect(await minterContract.getMintLimit(userAddress)).to.be.equal(0); 
@@ -225,7 +227,17 @@ describe("Mint randomly", () => {
     expect(await minterContract.canMint(userAddress)).to.be.equal(false);  
 
     await expect(minterContract.connect(user).purchase()).to.be.revertedWith("Needs to be an allowed minter");
+
+    await minterContract.setAllowedMinter(1);
+
+    expect(await minterContract.getAllowListMintLimit()).to.be.equal(2);
+    expect(await minterContract.getGeneralMintLimit()).to.be.equal(1);
+    expect(await minterContract.getMintLimit(userAddress)).to.be.equal(0); 
     
+    expect(await minterContract.canMint(userAddress)).to.be.equal(false);  
+
+    await expect(minterContract.connect(user).purchase()).to.be.revertedWith("Needs to be an allowed minter");
+
     expect(
       await minterContract.setSalePrice(ethers.utils.parseEther("0.2"))
     ).to.emit(minterContract, "PriceChanged");
@@ -240,6 +252,7 @@ describe("Mint randomly", () => {
       await minterContract.connect(user)
         .purchase({ value: ethers.utils.parseEther("0.2") })
     ).to.emit(minterContract, "EditionSold");
+
     await expect(minterContract.connect(user).purchase({ value: ethers.utils.parseEther("0.2") })).to.be.revertedWith( "Exceeded mint limit");
  
     expect(await minterContract.totalSupply()).to.be.equal(1);
