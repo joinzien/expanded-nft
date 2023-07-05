@@ -211,7 +211,15 @@ contract ExpandedNFT is
 
     /// @dev returns mint limit for the address
     function getMintLimit(address wallet) public view returns (uint256) {
-        uint256 currentMintLimit = _currentMintLimit();
+        if (wallet == owner()) {
+            return numberCanMint();
+        }
+
+        if ((_pricing.whoCanMint == WhoCanMint.ALLOWLIST) && (allowListed(wallet) == false)) {
+            return 0;
+        }
+
+        uint256 currentMintLimit = _currentMintLimit(wallet);
 
         if (_pricing.mintCounts[wallet]  >= currentMintLimit) {
             return 0;
@@ -390,7 +398,7 @@ contract ExpandedNFT is
         require(_isAllowedToMint(), "Needs to be an allowed minter");
 
         require(recipients.length <= numberCanMint(), "Exceeded supply");
-        require((_pricing.mintCounts[msg.sender] + recipients.length) <= _currentMintLimit(), "Exceeded mint limit");
+        require((_pricing.mintCounts[msg.sender] + recipients.length) <= _currentMintLimit(msg.sender), "Exceeded mint limit");
 
         require(_paymentAmountCorrect(recipients.length), "Wrong price");
 
@@ -528,12 +536,14 @@ contract ExpandedNFT is
       @dev returns the current limit on edition that 
            can be minted by one wallet
      */
-    function _currentMintLimit() internal view returns (uint256){
+    function _currentMintLimit(address wallet) internal view returns (uint256){
         if (_pricing.whoCanMint == WhoCanMint.ALLOWLIST) {
             return _pricing.allowListMintLimit;
         } else if (_pricing.whoCanMint == WhoCanMint.ANYONE) {
             return _pricing.generalMintLimit;
-        } 
+        } else if (wallet == owner()) {
+            return numberCanMint();
+        }
             
         return 0;       
     }
@@ -624,6 +634,10 @@ contract ExpandedNFT is
                 return true;
             }            
         }
+
+        if (owner() == msg.sender) {
+            return true;
+        }   
 
         return false;
     }

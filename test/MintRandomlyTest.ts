@@ -72,7 +72,7 @@ describe("Mint randomly", () => {
     expect(await minterContract.totalSupply()).to.be.equal(1);
     expect(await minterContract.getAllowListMintLimit()).to.be.equal(2);
     expect(await minterContract.getGeneralMintLimit()).to.be.equal(1);
-    expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(0);  
+    expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(9);  
   });
 
   it("Mint via mintEdition", async () => {
@@ -83,7 +83,7 @@ describe("Mint randomly", () => {
     expect(await minterContract.totalSupply()).to.be.equal(1);
     expect(await minterContract.getAllowListMintLimit()).to.be.equal(2);
     expect(await minterContract.getGeneralMintLimit()).to.be.equal(1);
-    expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(0);  
+    expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(9);  
   });
 
   it("Mint via mintEditions", async () => {
@@ -94,7 +94,7 @@ describe("Mint randomly", () => {
     expect(await minterContract.totalSupply()).to.be.equal(1);
     expect(await minterContract.getAllowListMintLimit()).to.be.equal(2);
     expect(await minterContract.getGeneralMintLimit()).to.be.equal(1);
-    expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(0);  
+    expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(9);  
   });
 
   it("Mint via mintMultipleEditions", async () => {
@@ -105,7 +105,7 @@ describe("Mint randomly", () => {
     expect(await minterContract.totalSupply()).to.be.equal(1);
     expect(await minterContract.getAllowListMintLimit()).to.be.equal(2);
     expect(await minterContract.getGeneralMintLimit()).to.be.equal(1);
-    expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(0);  
+    expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(9);  
   });
 
   it("Can mint zero cost", async () => {
@@ -118,7 +118,7 @@ describe("Mint randomly", () => {
     expect(await minterContract.totalSupply()).to.be.equal(1);
     expect(await minterContract.getAllowListMintLimit()).to.be.equal(2);
     expect(await minterContract.getGeneralMintLimit()).to.be.equal(1);
-    expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(0);  
+    expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(9);  
   });
 
   it("Minter only has payment", async () => {
@@ -129,7 +129,7 @@ describe("Mint randomly", () => {
     expect(await minterContract.totalSupply()).to.be.equal(1);
     expect(await minterContract.getAllowListMintLimit()).to.be.equal(2);
     expect(await minterContract.getGeneralMintLimit()).to.be.equal(1);
-    expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(0); 
+    expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(9); 
   });
 
   it("Minter only has payment, does not match the mint price", async () => {
@@ -140,7 +140,7 @@ describe("Mint randomly", () => {
     expect(await minterContract.totalSupply()).to.be.equal(0);
     expect(await minterContract.getAllowListMintLimit()).to.be.equal(2);
     expect(await minterContract.getGeneralMintLimit()).to.be.equal(1);
-    expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(1);  
+    expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(10);  
   });
 
   it("General public can not mint while the drop is not for sale", async () => {
@@ -182,16 +182,26 @@ describe("Mint randomly", () => {
     await expect(minterContract.connect(user).mintEditions([signerAddress], { value: ethers.utils.parseEther("0.1") })).to.emit(minterContract, "EditionSold");
   });
 
-   it("The owner can not mint while the drop is not for sale", async () => {
+   it("The owner can mint while the drop is not for sale", async () => {
     await minterContract.setAllowedMinter(0);
 
-    await expect(minterContract.mintEditions([signerAddress], { value: ethers.utils.parseEther("0.1") })).to.be.revertedWith("Needs to be an allowed minter");
+    await minterContract.mintEditions([signerAddress], { value: ethers.utils.parseEther("0") });
+
+    expect(await minterContract.totalSupply()).to.be.equal(1);
+    expect(await minterContract.getAllowListMintLimit()).to.be.equal(2);
+    expect(await minterContract.getGeneralMintLimit()).to.be.equal(1);
+    expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(9);   
   });
 
-  it("The owner can not mint when not on the allow list", async () => {
+  it("The owner can mint when not on the allow list", async () => {
     await minterContract.setAllowedMinter(1);
 
-    await expect(minterContract.mintEditions([signerAddress], { value: ethers.utils.parseEther("0.1") })).to.be.revertedWith("Needs to be an allowed minter");
+    await minterContract.mintEditions([signerAddress], { value: ethers.utils.parseEther("0.1") });
+
+    expect(await minterContract.totalSupply()).to.be.equal(1);
+    expect(await minterContract.getAllowListMintLimit()).to.be.equal(2);
+    expect(await minterContract.getGeneralMintLimit()).to.be.equal(1);
+    expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(9);      
   });
 
   it("The owner list member can mint when on the allow list", async () => {
@@ -208,37 +218,50 @@ describe("Mint randomly", () => {
   }); 
 
   it("General mint limit", async () => {
+    await minterContract.setAllowedMinter(0);
+
     expect(await minterContract.getAllowListMintLimit()).to.be.equal(2);
     expect(await minterContract.getGeneralMintLimit()).to.be.equal(1);
-    expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(0); 
+    expect(await minterContract.getMintLimit(userAddress)).to.be.equal(0); 
     
-    expect(await minterContract.canMint(signerAddress)).to.be.equal(false);  
+    expect(await minterContract.canMint(userAddress)).to.be.equal(false);  
 
-    await expect(minterContract.purchase()).to.be.revertedWith("Needs to be an allowed minter");
+    await expect(minterContract.connect(user).purchase()).to.be.revertedWith("Needs to be an allowed minter");
+
+    await minterContract.setAllowedMinter(1);
+
+    expect(await minterContract.getAllowListMintLimit()).to.be.equal(2);
+    expect(await minterContract.getGeneralMintLimit()).to.be.equal(1);
+    expect(await minterContract.getMintLimit(userAddress)).to.be.equal(0); 
     
+    expect(await minterContract.canMint(userAddress)).to.be.equal(false);  
+
+    await expect(minterContract.connect(user).purchase()).to.be.revertedWith("Needs to be an allowed minter");
+
     expect(
       await minterContract.setSalePrice(ethers.utils.parseEther("0.2"))
     ).to.emit(minterContract, "PriceChanged");
 
     expect(await minterContract.getAllowListMintLimit()).to.be.equal(2);
     expect(await minterContract.getGeneralMintLimit()).to.be.equal(1);
-    expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(1);    
+    expect(await minterContract.getMintLimit(userAddress)).to.be.equal(1);    
 
-    expect(await minterContract.canMint(signerAddress)).to.be.equal(true);  
+    expect(await minterContract.canMint(userAddress)).to.be.equal(true);  
  
     expect(
-      await minterContract
+      await minterContract.connect(user)
         .purchase({ value: ethers.utils.parseEther("0.2") })
     ).to.emit(minterContract, "EditionSold");
-    await expect(minterContract.purchase({ value: ethers.utils.parseEther("0.2") })).to.be.revertedWith( "Exceeded mint limit");
+
+    await expect(minterContract.connect(user).purchase({ value: ethers.utils.parseEther("0.2") })).to.be.revertedWith( "Exceeded mint limit");
  
     expect(await minterContract.totalSupply()).to.be.equal(1);
 
     expect(await minterContract.getAllowListMintLimit()).to.be.equal(2);
     expect(await minterContract.getGeneralMintLimit()).to.be.equal(1);
-    expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(0);  
+    expect(await minterContract.getMintLimit(userAddress)).to.be.equal(0);  
 
-    expect(await minterContract.canMint(signerAddress)).to.be.equal(false);  
+    expect(await minterContract.canMint(userAddress)).to.be.equal(false);  
 
   });
 
@@ -306,7 +329,7 @@ describe("Mint randomly", () => {
  
     expect(await minterContract.totalSupply()).to.be.equal(2);       
     expect(await minterContract.getMintLimit(artistAddress)).to.be.equal(3); 
-    expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(1);     
+    expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(8);     
     expect(await minterContract.isReserved(1)).to.be.equal(true);
     expect(await minterContract.whoReserved(1)).to.be.equal(artistAddress); 
     expect(await minterContract.isReserved(2)).to.be.equal(true);
