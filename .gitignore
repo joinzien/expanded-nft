@@ -6,6 +6,7 @@ yarn-error.log
 *.private.json
 ./networks.private.json
 typechain
+typechain-types
 
 .DS_Store
 .env
