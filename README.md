@@ -9,9 +9,6 @@ Based on the [Zora NFT Editions](https://github.com/ourzora/nft-editions) contra
    This allows for easy royalty collection, clear ownership of the collection, and your own contract 🎉
 2. `DropCreator`
    Gas-optimized factory contract allowing you to easily + for a low gas transaction create your own drop mintable contract.
-3. `SharedNFTLogic`
-   Contract that includes dynamic metadata generation for your editions removing the need for a centralized server.
-   imageUrl and animationUrl can be base64-encoded data-uris for these contracts totally removing the need for IPFS
 
 ## How do I create and use Expanded NFTs?
 
