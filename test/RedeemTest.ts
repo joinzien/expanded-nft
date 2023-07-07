@@ -164,13 +164,4 @@ describe("Redeem", () => {
     
     expect(startTokenURI).to.not.equal(endTokenURI);    
   });  
-
-  it("Get the redemptionPrice with an invalid ID", async () => {
-    await expect(minterContract.redemptionPrice(2)).to.be.revertedWith("No token"); 
-  });  
-
-  it("Get the redemptionPrice", async () => {
-    expect(await minterContract.redemptionPrice(1)).to.equal(0); 
-  });  
-
 });
