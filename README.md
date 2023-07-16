@@ -23,3 +23,8 @@ Based on the [Zora NFT Editions](https://github.com/ourzora/nft-editions) contra
 
 - [V1](https://github.com/joinzien/expanded-nft/releases/tag/v1.0.0) [ABI](./abi/expandednft_v1.json)
 - [V2](https://github.com/joinzien/expanded-nft/releases/tag/v2.0.0) [ABI](./abi/expandednft_v2.json)
+
+## Drops
+
+- [Sentimentite by Agnieszka Kurant](https://opensea.io/collection/sentimentite-by-agnieszka-kurant)
+- [Sea of Redemption](https://opensea.io/collection/sea-of-redemption)
