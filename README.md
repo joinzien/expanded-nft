@@ -19,15 +19,7 @@ Based on the [Zora NFT Editions](https://github.com/ourzora/nft-editions) contra
 - [How to redeem an edition?](./doc/redemption.md)
 - [How to withdraw royalties?](./doc/withdraw.md)
 
-## Deployed
+## ABIs
 
-### Mainnet
-
-- DropCreator [0x7A606F1d0B92d6db999b380Ba230226E9d42446b](https://etherscan.io/address/0x7A606F1d0B92d6db999b380Ba230226E9d42446b)
-- ExpandedNFT [0xC5f2fBc70aAA868c4E8D6029e549a4b5965b569e](https://etherscan.io/address/0xC5f2fBc70aAA868c4E8D6029e549a4b5965b569e)
-
-### Goerli
-
-- DropCreator [0xCD4801c694Bc3754DcB2918574554d52B3D559ab](https://goerli.etherscan.io/address/0xCD4801c694Bc3754DcB2918574554d52B3D559ab)
-- ExpandedNFT [0x78c13e0ED1191f67a63EEE24c4646011b1E14061](https://goerli.etherscan.io/address/0x78c13e0ED1191f67a63EEE24c4646011b1E14061)
-- TestCash [0xA824EaC0F6962ce4dC31D6Cfc4BCC2732ABD45Fa](https://goerli.etherscan.io/address/0xA824EaC0F6962ce4dC31D6Cfc4BCC2732ABD45Faf)
+- [V1](https://github.com/joinzien/expanded-nft/releases/tag/v1.0.0) [ABI](./abi/expandednft_v1.json)
+- [V2](https://github.com/joinzien/expanded-nft/releases/tag/v2.0.0) [ABI](./abi/expandednft_v2.json)
