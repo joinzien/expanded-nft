@@ -620,15 +620,15 @@ contract ExpandedNFT is
             return true;
         }
 
+        if (owner() == msg.sender) {
+            return true;
+        }   
+
         if (_pricing.whoCanMint == WhoCanMint.ALLOWLIST) {
             if (_pricing.allowListMinters[msg.sender]) {
                 return true;
             }            
         }
-
-        if (owner() == msg.sender) {
-            return true;
-        }   
 
         return false;
     }
