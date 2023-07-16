@@ -17,5 +17,4 @@ package-lock.json
 coverage.json
 coverage
 
-deployments/goerli/solcInputs/
-deployments/mainnet/solcInputs/
+deployments
