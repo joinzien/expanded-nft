@@ -23,6 +23,7 @@ Based on the [Zora NFT Editions](https://github.com/ourzora/nft-editions) contra
 
 - [V1](https://github.com/joinzien/expanded-nft/releases/tag/v1.0.0) [ABI](./abi/expandednft_v1.json)
 - [V2](https://github.com/joinzien/expanded-nft/releases/tag/v2.0.0) [ABI](./abi/expandednft_v2.json)
+- [V3](https://github.com/joinzien/expanded-nft/releases/tag/v3.0.0) [ABI](./abi/expandednft_v3.json)
 
 ## Drops
 
