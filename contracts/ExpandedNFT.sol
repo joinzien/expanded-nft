@@ -93,7 +93,19 @@ contract ExpandedNFT is
         WhoCanMint whoCanMint;
 
         // Mint counts for each address
-        mapping(address => uint256) mintCounts;                               
+        mapping(address => uint256) mintCounts;      
+
+        // Annual pass address
+        IERC2981Upgradeable annualPassAddress;
+
+        // Lifetime pass address
+        IERC2981Upgradeable lifetimePassAddress;
+
+        // Annual pass discount
+        uint256 annualPassDiscount; 
+
+        // Lifetime pass discount
+        uint256 lifetimePassDiscount;                                         
     }
 
     // Artists wallet address
@@ -203,6 +215,26 @@ contract ExpandedNFT is
     /// @dev returns the general mint limit
     function getGeneralMintLimit() public view returns (uint256) {
         return _pricing.generalMintLimit;
+    }
+
+    /// @dev returns the Annual pass address
+    function getAnnualPassAddress() public view returns (address) {
+        return address(_pricing.annualPassAddress);
+    }
+
+    /// @dev returns the Lifetime pass address
+    function getLifetimePassAddress() public view returns (address) {
+        return address(_pricing.lifetimePassAddress);
+    }
+
+    /// @dev returns the Annual pass discount
+    function getAnnualPassDiscount() public view returns (uint256) {
+        return _pricing.annualPassDiscount;
+    }
+
+    /// @dev returns the Lifetime pass discount
+    function getLifetimePassDiscount() public view returns (uint256) {
+        return _pricing.lifetimePassDiscount;
     }
 
     /// @dev returns mint limit for the address
@@ -413,6 +445,20 @@ contract ExpandedNFT is
 
         return currentToken;        
     }  
+
+    /**
+      @param annualPassAddress Annual pass ERC721 token address. Can be null if no token is in use.
+      @param lifetimePassAddress Lifetime pass ERC721 token address. Can be null if no token is in use.
+      @param annualPassDiscount Annual pass discount in BPS.
+      @param lifetimePassDiscount Lifetime pass discount in BPS.                                                                                 
+      @dev Set various pricing related values
+     */
+    function  updateDiscounts(address annualPassAddress, address lifetimePassAddress, uint256 annualPassDiscount, uint256 lifetimePassDiscount) external onlyOwner { 
+        _pricing.annualPassAddress = IERC2981Upgradeable(annualPassAddress);
+        _pricing.lifetimePassAddress = IERC2981Upgradeable(lifetimePassAddress);
+        _pricing.annualPassDiscount = annualPassDiscount; 
+        _pricing.lifetimePassDiscount = lifetimePassDiscount;    
+    }
 
     /**
       @param _royaltyBPS BPS of the royalty set on the contract. Can be 0 for no royalty.
