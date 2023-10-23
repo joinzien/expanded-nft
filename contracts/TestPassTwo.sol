@@ -2,7 +2,7 @@
 
 /**
 
-    ExpandedNFTs
+    Test pass ERC721 contract
 
  */
 
@@ -15,8 +15,8 @@ contract TestPassTwo is ERC721Upgradeable {
     using CountersUpgradeable for CountersUpgradeable.Counter;
     CountersUpgradeable.Counter private _tokenIds;
 
-    constructor() {
-        __ERC721_init("Test Pass Two", "TPT");
+    function initialize() public initializer {
+        __ERC721_init("Test Pass One", "TPO");
     }
 
     function mint(address player) public returns (uint256) {
