@@ -39,9 +39,7 @@ describe("Mint randomly", () => {
 
     const { DropCreator } = await deployments.fixture([
       "DropCreator",
-      "ExpandedNFT",
-      "TestPassOne",
-      "TestPassTwo",      
+      "ExpandedNFT",  
     ]);
 
     dynamicSketch = (await ethers.getContractAt(
