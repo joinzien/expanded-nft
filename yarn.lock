@@ -1168,10 +1168,10 @@
   dependencies:
     "@types/node" "*"
 
-"@types/data-urls@^3.0.2":
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/@types/data-urls/-/data-urls-3.0.2.tgz#9203b7c4fb688987d5b50c248bb215b2fa084f13"
-  integrity sha512-V+/3H6x9YbKFshhu8hE89Cut1GlrN/gAAlgcm/wdkk2NC1RovnzdrF0qitP8xCnbAANgzRAmqa65rG9GppoHnQ==
+"@types/data-urls@^3.0.3":
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/@types/data-urls/-/data-urls-3.0.3.tgz#c5ca1f3f26bf907cc076e04685a3c51db6dd6729"
+  integrity sha512-UpTY5wZjOGHu9UjgqsXvB+hzHqgOgYZ/ToKryWqBFesWIeNrDel+pVqAwD5gEjgwya1jTSrKcym0sB94yeN12g==
   dependencies:
     "@types/whatwg-mimetype" "*"
     "@types/whatwg-url" "*"
