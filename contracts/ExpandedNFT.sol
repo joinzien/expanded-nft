@@ -9,6 +9,7 @@
 pragma solidity ^0.8.19;
 
 import {ERC721Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
+import {IERC721Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol";
 import {IERC2981Upgradeable, IERC165Upgradeable} from "@openzeppelin/contracts-upgradeable/interfaces/IERC2981Upgradeable.sol";
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {AddressUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
@@ -96,10 +97,10 @@ contract ExpandedNFT is
         mapping(address => uint256) mintCounts;      
 
         // Annual pass address
-        IERC2981Upgradeable annualPassAddress;
+        IERC721Upgradeable annualPassAddress;
 
         // Lifetime pass address
-        IERC2981Upgradeable lifetimePassAddress;
+        IERC721Upgradeable lifetimePassAddress;
 
         // Annual pass discount
         uint256 annualPassDiscount; 
@@ -107,6 +108,8 @@ contract ExpandedNFT is
         // Lifetime pass discount
         uint256 lifetimePassDiscount;                                         
     }
+
+    uint256 private constant hundredPercentAsBps = 10000;
 
     // Artists wallet address
     address private _artistWallet;
@@ -351,7 +354,31 @@ contract ExpandedNFT is
     function _paymentAmountCorrect(uint256 numberToBeMinted)
         internal returns (bool)
     {
-        if (msg.value == (price() * numberToBeMinted)) {
+        uint256 paymentAmount = (price() * numberToBeMinted);
+
+        if (address(_pricing.annualPassAddress) != address(0x0)) {
+            if (_pricing.annualPassAddress.balanceOf(msg.sender) > 0) {
+                uint256 discount = hundredPercentAsBps - _pricing.annualPassDiscount;
+                uint256 annualPassPaymentAmount = (paymentAmount * discount) / hundredPercentAsBps; 
+
+                if (msg.value == annualPassPaymentAmount) {
+                    return (true);
+                }
+            }
+        }
+
+        if (address(_pricing.lifetimePassAddress) != address(0x0)) {
+            if (_pricing.lifetimePassAddress.balanceOf(msg.sender) > 0) {
+                uint256 discount = hundredPercentAsBps - _pricing.lifetimePassDiscount;
+                uint256 lifetimePassPaymentAmount = (paymentAmount * discount) / hundredPercentAsBps; 
+
+                if (msg.value == lifetimePassPaymentAmount) {
+                    return (true);
+                }
+            }
+        }
+
+        if (msg.value == paymentAmount) {
             return (true);
         }
 
@@ -454,11 +481,11 @@ contract ExpandedNFT is
       @dev Set various pricing related values
      */
     function  updateDiscounts(address annualPassAddress, address lifetimePassAddress, uint256 annualPassDiscount, uint256 lifetimePassDiscount) external onlyOwner { 
-        require(annualPassDiscount <= 10000, "Discount can not be greater than 100%");
-        require(lifetimePassDiscount <= 10000, "Discount can not be greater than 100%");
+        require(annualPassDiscount <= hundredPercentAsBps, "Discount can not be greater than 100%");
+        require(lifetimePassDiscount <= hundredPercentAsBps, "Discount can not be greater than 100%");
 
-        _pricing.annualPassAddress = IERC2981Upgradeable(annualPassAddress);
-        _pricing.lifetimePassAddress = IERC2981Upgradeable(lifetimePassAddress);
+        _pricing.annualPassAddress = IERC721Upgradeable(annualPassAddress);
+        _pricing.lifetimePassAddress = IERC721Upgradeable(lifetimePassAddress);
         _pricing.annualPassDiscount = annualPassDiscount; 
         _pricing.lifetimePassDiscount = lifetimePassDiscount;    
     }
