@@ -703,7 +703,19 @@ contract ExpandedNFT is
         if (_pricing.whoCanMint == WhoCanMint.ALLOWLIST) {
             if (_pricing.allowListMinters[msg.sender]) {
                 return true;
-            }            
+            } 
+
+            if (address(_pricing.lifetimePassAddress) != address(0x0)) {
+                if (_pricing.lifetimePassAddress.balanceOf(msg.sender) > 0) {
+                    return (true);
+                }
+            }
+
+            if (address(_pricing.annualPassAddress) != address(0x0)) {
+                if (_pricing.annualPassAddress.balanceOf(msg.sender) > 0) {
+                    return (true);
+                }
+            }
         }
 
         return false;

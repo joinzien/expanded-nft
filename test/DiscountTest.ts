@@ -43,9 +43,7 @@ describe("Discounts", () => {
 
     const { DropCreator } = await deployments.fixture([
       "DropCreator",
-      "ExpandedNFT",
-      "TestPassOne",
-      "TestPassTwo",      
+      "ExpandedNFT",  
     ]);
 
     dynamicSketch = (await ethers.getContractAt(
@@ -66,16 +64,20 @@ describe("Discounts", () => {
       dropResult
     )) as ExpandedNFT;
 
+    const { TestPassOne } = await deployments.fixture(["TestPassOne"]);
     annualPassContract = (await ethers.getContractAt(
       "TestPassOne",
-      dropResult
-    )) as TestPassOne;
+      TestPassOne.address
+    )) as TestPassOne;    
+    annualPassContract.initialize();
 
+    const { TestPassTwo } = await deployments.fixture(["TestPassTwo"]);
     lifetimePassContract = (await ethers.getContractAt(
       "TestPassTwo",
-      dropResult
+      TestPassTwo.address
     )) as TestPassTwo;
-  
+    lifetimePassContract.initialize();
+
     const mintCost = ethers.utils.parseEther("0.1");
     await minterContract.setPricing(10, 500, mintCost, mintCost, 2, 1);  
     await minterContract.updateDiscounts(annualPassContract.address, lifetimePassContract.address, 4000, 2000); 
@@ -105,14 +107,14 @@ describe("Discounts", () => {
 
   }); 
   
-  it("A non pass holder can not mint while the drop is not for sale", async () => {
+  it("A lifetime pass holder can not mint while the drop is not for sale", async () => {
     await annualPassContract.connect(user).mint(userAddress);
     await minterContract.setAllowedMinter(0);
 
     await expect(minterContract.connect(user).mintEditions([signerAddress], { value: ethers.utils.parseEther("0.1") })).to.be.revertedWith("Needs to be an allowed minter");
   });  
 
-  it("A non pass holder can not mint while the drop is only for sale to allow listed wallets", async () => {
+  it("A lifetime pass holder can mint while the drop is only for sale to allow listed wallets", async () => {
     await annualPassContract.connect(user).mint(userAddress);
     await minterContract.setAllowedMinter(1);
 
@@ -124,7 +126,7 @@ describe("Discounts", () => {
     expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(9);   
   });  
   
-  it("A non pass holder can not mint while the drop is only for sale to all wallets", async () => {
+  it("A lifetime pass holder can not mint while the drop is only for sale to all wallets", async () => {
     await annualPassContract.connect(user).mint(userAddress);    
     await minterContract.setAllowedMinter(2);
 
