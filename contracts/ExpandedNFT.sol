@@ -454,6 +454,9 @@ contract ExpandedNFT is
       @dev Set various pricing related values
      */
     function  updateDiscounts(address annualPassAddress, address lifetimePassAddress, uint256 annualPassDiscount, uint256 lifetimePassDiscount) external onlyOwner { 
+        require(annualPassDiscount <= 10000, "Discount can not be greater than 100%");
+        require(lifetimePassDiscount <= 10000, "Discount can not be greater than 100%");
+
         _pricing.annualPassAddress = IERC2981Upgradeable(annualPassAddress);
         _pricing.lifetimePassAddress = IERC2981Upgradeable(lifetimePassAddress);
         _pricing.annualPassDiscount = annualPassDiscount; 

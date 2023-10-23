@@ -118,4 +118,61 @@ describe("Pricing", () => {
     expect(await minterContract.getLifetimePassDiscount()).to.be.equal(20);    
   });
 
+  it("Set the annual pass discount to 100%", async () => {
+    const testAddress1 = "0x0123456789012345678901234567890123456789";
+    const testAddress2 = "0x9876543210987654321098765432109876543210";
+
+    expect(await minterContract.getAnnualPassAddress()).to.be.equal(nullAddress);
+    expect(await minterContract.getLifetimePassAddress()).to.be.equal(nullAddress);
+    expect(await minterContract.getAnnualPassDiscount()).to.be.equal(0);
+    expect(await minterContract.getLifetimePassDiscount()).to.be.equal(0);
+
+    await minterContract.updateDiscounts(testAddress1, testAddress2, 10000, 20);
+    
+    expect(await minterContract.getAnnualPassAddress()).to.be.equal(testAddress1);
+    expect(await minterContract.getLifetimePassAddress()).to.be.equal(testAddress2);
+    expect(await minterContract.getAnnualPassDiscount()).to.be.equal(10000);
+    expect(await minterContract.getLifetimePassDiscount()).to.be.equal(20);    
+  });
+
+  it("Set the annual pass discount to greater than 100%", async () => {
+    const testAddress1 = "0x0123456789012345678901234567890123456789";
+    const testAddress2 = "0x9876543210987654321098765432109876543210";
+
+    expect(await minterContract.getAnnualPassAddress()).to.be.equal(nullAddress);
+    expect(await minterContract.getLifetimePassAddress()).to.be.equal(nullAddress);
+    expect(await minterContract.getAnnualPassDiscount()).to.be.equal(0);
+    expect(await minterContract.getLifetimePassDiscount()).to.be.equal(0);
+
+    await expect(minterContract.updateDiscounts(nullAddress, nullAddress, 10001, 10)).to.be.revertedWith("Discount can not be greater than 100%"); 
+  });
+
+  it("Set the Lifetime pass discount to 100%", async () => {
+    const testAddress1 = "0x0123456789012345678901234567890123456789";
+    const testAddress2 = "0x9876543210987654321098765432109876543210";
+
+    expect(await minterContract.getAnnualPassAddress()).to.be.equal(nullAddress);
+    expect(await minterContract.getLifetimePassAddress()).to.be.equal(nullAddress);
+    expect(await minterContract.getAnnualPassDiscount()).to.be.equal(0);
+    expect(await minterContract.getLifetimePassDiscount()).to.be.equal(0);
+
+    await minterContract.updateDiscounts(testAddress1, testAddress2, 20, 10000);
+    
+    expect(await minterContract.getAnnualPassAddress()).to.be.equal(testAddress1);
+    expect(await minterContract.getLifetimePassAddress()).to.be.equal(testAddress2);
+    expect(await minterContract.getAnnualPassDiscount()).to.be.equal(20);
+    expect(await minterContract.getLifetimePassDiscount()).to.be.equal(10000);    
+  });
+
+  it("Set the Lifetime pass discount to greater than 100%", async () => {
+    const testAddress1 = "0x0123456789012345678901234567890123456789";
+    const testAddress2 = "0x9876543210987654321098765432109876543210";
+
+    expect(await minterContract.getAnnualPassAddress()).to.be.equal(nullAddress);
+    expect(await minterContract.getLifetimePassAddress()).to.be.equal(nullAddress);
+    expect(await minterContract.getAnnualPassDiscount()).to.be.equal(0);
+    expect(await minterContract.getLifetimePassDiscount()).to.be.equal(0);
+
+    await expect(minterContract.updateDiscounts(nullAddress, nullAddress, 10, 10001)).to.be.revertedWith("Discount can not be greater than 100%"); 
+  });
 });
