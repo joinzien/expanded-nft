@@ -40,6 +40,8 @@ describe("Mint randomly", () => {
     const { DropCreator } = await deployments.fixture([
       "DropCreator",
       "ExpandedNFT",
+      "TestPassOne",
+      "TestPassTwo",      
     ]);
 
     dynamicSketch = (await ethers.getContractAt(
@@ -59,7 +61,7 @@ describe("Mint randomly", () => {
       "ExpandedNFT",
       dropResult
     )) as ExpandedNFT;
-
+  
     const mintCost = ethers.utils.parseEther("0.1");
     await minterContract.setPricing(10, 500, mintCost, mintCost, 2, 1);   
   });
@@ -336,5 +338,5 @@ describe("Mint randomly", () => {
     expect(await minterContract.whoReserved(2)).to.be.equal(artistAddress);   
     expect(await minterContract.getReservationsCount(artistAddress)).to.be.equal(2); 
     expect((await minterContract.getReservationsList(artistAddress)).toString()).to.be.equal([1, 2].toString());       
-  });    
+  });  
 });
