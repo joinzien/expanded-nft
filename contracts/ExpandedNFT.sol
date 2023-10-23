@@ -356,23 +356,24 @@ contract ExpandedNFT is
     {
         uint256 paymentAmount = (price() * numberToBeMinted);
 
-        if (address(_pricing.annualPassAddress) != address(0x0)) {
-            if (_pricing.annualPassAddress.balanceOf(msg.sender) > 0) {
-                uint256 discount = hundredPercentAsBps - _pricing.annualPassDiscount;
-                uint256 annualPassPaymentAmount = (paymentAmount * discount) / hundredPercentAsBps; 
-
-                if (msg.value == annualPassPaymentAmount) {
-                    return (true);
-                }
-            }
-        }
-
+        // Assuming Lifetime passes have a greeater or equal discount to the annual pass 
         if (address(_pricing.lifetimePassAddress) != address(0x0)) {
             if (_pricing.lifetimePassAddress.balanceOf(msg.sender) > 0) {
                 uint256 discount = hundredPercentAsBps - _pricing.lifetimePassDiscount;
                 uint256 lifetimePassPaymentAmount = (paymentAmount * discount) / hundredPercentAsBps; 
 
                 if (msg.value == lifetimePassPaymentAmount) {
+                    return (true);
+                }
+            }
+        }
+
+        if (address(_pricing.annualPassAddress) != address(0x0)) {
+            if (_pricing.annualPassAddress.balanceOf(msg.sender) > 0) {
+                uint256 discount = hundredPercentAsBps - _pricing.annualPassDiscount;
+                uint256 annualPassPaymentAmount = (paymentAmount * discount) / hundredPercentAsBps; 
+
+                if (msg.value == annualPassPaymentAmount) {
                     return (true);
                 }
             }
