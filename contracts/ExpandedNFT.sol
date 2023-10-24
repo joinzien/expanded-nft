@@ -109,7 +109,7 @@ contract ExpandedNFT is
         uint256 lifetimePassDiscount;                                         
     }
 
-    uint256 private constant hundredPercentAsBps = 10000;
+    uint256 private constant _HUNDRED_PERCENT_AS_BPS = 10000;
 
     // Artists wallet address
     address private _artistWallet;
@@ -359,8 +359,8 @@ contract ExpandedNFT is
         // Assuming Lifetime passes have a greeater or equal discount to the annual pass 
         if (address(_pricing.lifetimePassAddress) != address(0x0)) {
             if (_pricing.lifetimePassAddress.balanceOf(msg.sender) > 0) {
-                uint256 discount = hundredPercentAsBps - _pricing.lifetimePassDiscount;
-                uint256 lifetimePassPaymentAmount = (paymentAmount * discount) / hundredPercentAsBps; 
+                uint256 discount = _HUNDRED_PERCENT_AS_BPS - _pricing.lifetimePassDiscount;
+                uint256 lifetimePassPaymentAmount = (paymentAmount * discount) / _HUNDRED_PERCENT_AS_BPS; 
 
                 if (msg.value == lifetimePassPaymentAmount) {
                     return (true);
@@ -372,8 +372,8 @@ contract ExpandedNFT is
 
         if (address(_pricing.annualPassAddress) != address(0x0)) {
             if (_pricing.annualPassAddress.balanceOf(msg.sender) > 0) {
-                uint256 discount = hundredPercentAsBps - _pricing.annualPassDiscount;
-                uint256 annualPassPaymentAmount = (paymentAmount * discount) / hundredPercentAsBps; 
+                uint256 discount = _HUNDRED_PERCENT_AS_BPS - _pricing.annualPassDiscount;
+                uint256 annualPassPaymentAmount = (paymentAmount * discount) / _HUNDRED_PERCENT_AS_BPS; 
 
                 if (msg.value == annualPassPaymentAmount) {
                     return (true);
@@ -486,8 +486,8 @@ contract ExpandedNFT is
       @dev Set various pricing related values
      */
     function  updateDiscounts(address annualPassAddress, address lifetimePassAddress, uint256 annualPassDiscount, uint256 lifetimePassDiscount) external onlyOwner { 
-        require(annualPassDiscount <= hundredPercentAsBps, "Discount can not be greater than 100%");
-        require(lifetimePassDiscount <= hundredPercentAsBps, "Discount can not be greater than 100%");
+        require(annualPassDiscount <= _HUNDRED_PERCENT_AS_BPS, "Discount can not be greater than 100%");
+        require(lifetimePassDiscount <= _HUNDRED_PERCENT_AS_BPS, "Discount can not be greater than 100%");
 
         _pricing.annualPassAddress = IERC721Upgradeable(annualPassAddress);
         _pricing.lifetimePassAddress = IERC721Upgradeable(lifetimePassAddress);
