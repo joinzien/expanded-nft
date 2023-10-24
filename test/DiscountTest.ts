@@ -29,7 +29,12 @@ describe("Discounts", () => {
   let annualPassContract: TestPassOne;
   let lifetimePassContract: TestPassTwo;
 
-  const nullAddress = "0x0000000000000000000000000000000000000000";
+  const mintCostAllowlist = ethers.utils.parseEther("0.4");
+  const mintCostGeneral = ethers.utils.parseEther("0.8");
+
+  const hundreadPercentInBps = 10000;
+  const annualPassDiscountBps = 2500;
+  const lifetimePassDiscountBps = 5000;
 
   beforeEach(async () => {
     signer = (await ethers.getSigners())[0];
@@ -78,10 +83,8 @@ describe("Discounts", () => {
     )) as TestPassTwo;
     lifetimePassContract.initialize();
 
-    const mintCostAllowlist = ethers.utils.parseEther("0.4");
-    const mintCostGeneral = ethers.utils.parseEther("0.8");
     await minterContract.setPricing(10, 500, mintCostAllowlist, mintCostGeneral, 2, 1);  
-    await minterContract.updateDiscounts(annualPassContract.address, lifetimePassContract.address, 2500, 5000); 
+    await minterContract.updateDiscounts(annualPassContract.address, lifetimePassContract.address, annualPassDiscountBps, lifetimePassDiscountBps); 
   });
   
   it("A non pass holder can not mint while the drop is not for sale", async () => {
@@ -337,4 +340,35 @@ describe("Discounts", () => {
 
     await expect(minterContract.connect(user).mintEditions([signerAddress], { value: ethers.utils.parseEther("0.9") })).to.be.revertedWith("Wrong price");
   }); 
+
+  it("A pass holder can mint for free with 100% discount", async () => {
+    await minterContract.updateDiscounts(annualPassContract.address, lifetimePassContract.address, hundreadPercentInBps, hundreadPercentInBps); 
+
+    await annualPassContract.connect(user).mint(userAddress);    
+    await minterContract.setAllowedMinter(2);
+
+    expect(await minterContract.connect(user).mintEditions([signerAddress], { value: ethers.utils.parseEther("0") })).to.emit(minterContract, "EditionSold");
+ 
+    expect(await minterContract.totalSupply()).to.be.equal(1);
+    expect(await minterContract.getAllowListMintLimit()).to.be.equal(2);
+    expect(await minterContract.getGeneralMintLimit()).to.be.equal(1);
+    expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(9);     
+
+  });  
+
+  it("A pass holder can mint for the standard cost with 0% discount", async () => {
+    await minterContract.updateDiscounts(annualPassContract.address, lifetimePassContract.address, 0, 0); 
+
+    await annualPassContract.connect(user).mint(userAddress);    
+    await minterContract.setAllowedMinter(2);
+
+    expect(await minterContract.connect(user).mintEditions([signerAddress], { value: ethers.utils.parseEther("0.8") })).to.emit(minterContract, "EditionSold");
+ 
+    expect(await minterContract.totalSupply()).to.be.equal(1);
+    expect(await minterContract.getAllowListMintLimit()).to.be.equal(2);
+    expect(await minterContract.getGeneralMintLimit()).to.be.equal(1);
+    expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(9);     
+
+  });  
+
 });

@@ -108,6 +108,19 @@ describe("Mint randomly", () => {
     expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(9);  
   });
 
+  it("Mint 2 editions via mintMultipleEditions", async () => {
+    await minterContract.setAllowedMinter(2);
+    const mintCost = ethers.utils.parseEther("0.1");
+    await minterContract.setPricing(10, 500, mintCost, mintCost, 2, 2);  
+
+    expect(await minterContract.mintMultipleEditions(signerAddress, 2, { value: ethers.utils.parseEther("0.2") })).to.emit(minterContract, "EditionSold");
+ 
+    expect(await minterContract.totalSupply()).to.be.equal(2);
+    expect(await minterContract.getAllowListMintLimit()).to.be.equal(2);
+    expect(await minterContract.getGeneralMintLimit()).to.be.equal(2);
+    expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(8);  
+  });
+
   it("Can mint zero cost", async () => {
     const mintCost = ethers.utils.parseEther("0.0");
     await minterContract.setPricing(10, 500, mintCost, mintCost, 2, 1);   
