@@ -354,7 +354,7 @@ contract ExpandedNFT is
     function _paymentAmountCorrect(uint256 numberToBeMinted)
         internal returns (bool)
     {
-        uint256 paymentAmount = (price() * numberToBeMinted);
+        uint256 paymentAmount = price() * numberToBeMinted;
 
         // Assuming Lifetime passes have a greeater or equal discount to the annual pass 
         if (address(_pricing.lifetimePassAddress) != address(0x0)) {
@@ -365,6 +365,8 @@ contract ExpandedNFT is
                 if (msg.value == lifetimePassPaymentAmount) {
                     return (true);
                 }
+
+                return (false);
             }
         }
 
@@ -376,6 +378,8 @@ contract ExpandedNFT is
                 if (msg.value == annualPassPaymentAmount) {
                     return (true);
                 }
+
+                return (false);
             }
         }
 
