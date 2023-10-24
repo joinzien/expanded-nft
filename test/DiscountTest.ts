@@ -129,6 +129,19 @@ describe("Discounts", () => {
     expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(9);   
   });  
   
+  it("A multiple  lifetime pass holder can mint while the drop is only for sale to allow listed wallets", async () => {
+    await lifetimePassContract.connect(user).mint(userAddress);
+    await lifetimePassContract.connect(user).mint(userAddress);
+    await minterContract.setAllowedMinter(1);
+
+    expect(await minterContract.connect(user).mintEditions([signerAddress], { value: ethers.utils.parseEther("0.2") })).to.emit(minterContract, "EditionSold");
+ 
+    expect(await minterContract.totalSupply()).to.be.equal(1);
+    expect(await minterContract.getAllowListMintLimit()).to.be.equal(2);
+    expect(await minterContract.getGeneralMintLimit()).to.be.equal(1);
+    expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(9);   
+  });  
+
   it("A lifetime pass holder can not mint sending the wrong price on the allow list", async () => {
     await lifetimePassContract.connect(user).mint(userAddress);
     await minterContract.setAllowedMinter(1);
@@ -149,6 +162,20 @@ describe("Discounts", () => {
 
   });  
   
+  it("A multiple lifetime pass holder can not mint while the drop is only for sale to all wallets", async () => {
+    await lifetimePassContract.connect(user).mint(userAddress);    
+    await lifetimePassContract.connect(user).mint(userAddress);        
+    await minterContract.setAllowedMinter(2);
+
+    expect(await minterContract.connect(user).mintEditions([signerAddress], { value: ethers.utils.parseEther("0.4") })).to.emit(minterContract, "EditionSold");
+ 
+    expect(await minterContract.totalSupply()).to.be.equal(1);
+    expect(await minterContract.getAllowListMintLimit()).to.be.equal(2);
+    expect(await minterContract.getGeneralMintLimit()).to.be.equal(1);
+    expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(9);     
+
+  });  
+
   it("A lifetime pass holder can not mint sending the wrong price", async () => {
     await lifetimePassContract.connect(user).mint(userAddress);
     await minterContract.setAllowedMinter(2);
@@ -175,6 +202,19 @@ describe("Discounts", () => {
     expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(9);   
   });  
 
+  it("A multiple annual pass holder can mint while the drop is only for sale to allow listed wallets", async () => {
+    await annualPassContract.connect(user).mint(userAddress);
+    await annualPassContract.connect(user).mint(userAddress);
+    await minterContract.setAllowedMinter(1);
+
+    expect(await minterContract.connect(user).mintEditions([signerAddress], { value: ethers.utils.parseEther("0.3") })).to.emit(minterContract, "EditionSold");
+ 
+    expect(await minterContract.totalSupply()).to.be.equal(1);
+    expect(await minterContract.getAllowListMintLimit()).to.be.equal(2);
+    expect(await minterContract.getGeneralMintLimit()).to.be.equal(1);
+    expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(9);   
+  });  
+
   it("A annual pass holder can not mint sending the wrong price", async () => {
     await annualPassContract.connect(user).mint(userAddress);
     await minterContract.setAllowedMinter(1);
@@ -183,6 +223,20 @@ describe("Discounts", () => {
   });   
   
   it("A annual pass holder can not mint while the drop is only for sale to all wallets", async () => {
+    await annualPassContract.connect(user).mint(userAddress);    
+    await minterContract.setAllowedMinter(2);
+
+    expect(await minterContract.connect(user).mintEditions([signerAddress], { value: ethers.utils.parseEther("0.6") })).to.emit(minterContract, "EditionSold");
+ 
+    expect(await minterContract.totalSupply()).to.be.equal(1);
+    expect(await minterContract.getAllowListMintLimit()).to.be.equal(2);
+    expect(await minterContract.getGeneralMintLimit()).to.be.equal(1);
+    expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(9);     
+
+  });  
+
+  it("A multiple annual pass holder can not mint while the drop is only for sale to all wallets", async () => {
+    await annualPassContract.connect(user).mint(userAddress);  
     await annualPassContract.connect(user).mint(userAddress);    
     await minterContract.setAllowedMinter(2);
 
@@ -223,6 +277,21 @@ describe("Discounts", () => {
     expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(9);   
   }); 
   
+  it("A multiple annual and lifetime pass holder can mint while the drop is only for sale to allow listed wallets", async () => {
+    await annualPassContract.connect(user).mint(userAddress);
+    await annualPassContract.connect(user).mint(userAddress);
+    await lifetimePassContract.connect(user).mint(userAddress);      
+    await lifetimePassContract.connect(user).mint(userAddress);  
+    await minterContract.setAllowedMinter(1);
+
+    expect(await minterContract.connect(user).mintEditions([signerAddress], { value: ethers.utils.parseEther("0.2") })).to.emit(minterContract, "EditionSold");
+ 
+    expect(await minterContract.totalSupply()).to.be.equal(1);
+    expect(await minterContract.getAllowListMintLimit()).to.be.equal(2);
+    expect(await minterContract.getGeneralMintLimit()).to.be.equal(1);
+    expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(9);   
+  }); 
+
   it("A annual and lifetime pass holder can not mint while the drop is not for sale", async () => {
     await annualPassContract.connect(user).mint(userAddress);
     await lifetimePassContract.connect(user).mint(userAddress);  
@@ -244,6 +313,22 @@ describe("Discounts", () => {
     expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(9);     
 
   });  
+
+  it("A multiple annual and lifetime pass holder can not mint while the drop is only for sale to all wallets", async () => {
+    await annualPassContract.connect(user).mint(userAddress);
+    await annualPassContract.connect(user).mint(userAddress);
+    await lifetimePassContract.connect(user).mint(userAddress);     
+    await lifetimePassContract.connect(user).mint(userAddress);      
+    await minterContract.setAllowedMinter(2);
+
+    expect(await minterContract.connect(user).mintEditions([signerAddress], { value: ethers.utils.parseEther("0.4") })).to.emit(minterContract, "EditionSold");
+ 
+    expect(await minterContract.totalSupply()).to.be.equal(1);
+    expect(await minterContract.getAllowListMintLimit()).to.be.equal(2);
+    expect(await minterContract.getGeneralMintLimit()).to.be.equal(1);
+    expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(9);     
+
+  }); 
 
   it("A annual and lifetime pass holder can not mint while the drop is not for sale", async () => {
     await annualPassContract.connect(user).mint(userAddress);
