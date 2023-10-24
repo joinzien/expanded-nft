@@ -9,10 +9,10 @@
 pragma solidity ^0.8.19;
 
 import {ERC721Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
+import {IERC721Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol";
 import {IERC2981Upgradeable, IERC165Upgradeable} from "@openzeppelin/contracts-upgradeable/interfaces/IERC2981Upgradeable.sol";
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {AddressUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
-import {IERC20Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 import {StringsUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 
 import {IExpandedNFT} from "./IExpandedNFT.sol";
@@ -94,8 +94,22 @@ contract ExpandedNFT is
         WhoCanMint whoCanMint;
 
         // Mint counts for each address
-        mapping(address => uint256) mintCounts;                               
+        mapping(address => uint256) mintCounts;      
+
+        // Annual pass address
+        IERC721Upgradeable annualPassAddress;
+
+        // Lifetime pass address
+        IERC721Upgradeable lifetimePassAddress;
+
+        // Annual pass discount
+        uint256 annualPassDiscount; 
+
+        // Lifetime pass discount
+        uint256 lifetimePassDiscount;                                         
     }
+
+    uint256 private constant _HUNDRED_PERCENT_AS_BPS = 10000;
 
     // Artists wallet address
     address private _artistWallet;
@@ -204,6 +218,26 @@ contract ExpandedNFT is
     /// @dev returns the general mint limit
     function getGeneralMintLimit() public view returns (uint256) {
         return _pricing.generalMintLimit;
+    }
+
+    /// @dev returns the Annual pass address
+    function getAnnualPassAddress() public view returns (address) {
+        return address(_pricing.annualPassAddress);
+    }
+
+    /// @dev returns the Lifetime pass address
+    function getLifetimePassAddress() public view returns (address) {
+        return address(_pricing.lifetimePassAddress);
+    }
+
+    /// @dev returns the Annual pass discount
+    function getAnnualPassDiscount() public view returns (uint256) {
+        return _pricing.annualPassDiscount;
+    }
+
+    /// @dev returns the Lifetime pass discount
+    function getLifetimePassDiscount() public view returns (uint256) {
+        return _pricing.lifetimePassDiscount;
     }
 
     /// @dev returns mint limit for the address
@@ -320,7 +354,36 @@ contract ExpandedNFT is
     function _paymentAmountCorrect(uint256 numberToBeMinted)
         internal returns (bool)
     {
-        if (msg.value == (price() * numberToBeMinted)) {
+        uint256 paymentAmount = price() * numberToBeMinted;
+
+        // Assuming Lifetime passes have a greeater or equal discount to the annual pass 
+        if (address(_pricing.lifetimePassAddress) != address(0x0)) {
+            if (_pricing.lifetimePassAddress.balanceOf(msg.sender) > 0) {
+                uint256 discount = _HUNDRED_PERCENT_AS_BPS - _pricing.lifetimePassDiscount;
+                uint256 lifetimePassPaymentAmount = (paymentAmount * discount) / _HUNDRED_PERCENT_AS_BPS; 
+
+                if (msg.value == lifetimePassPaymentAmount) {
+                    return (true);
+                }
+
+                return (false);
+            }
+        }
+
+        if (address(_pricing.annualPassAddress) != address(0x0)) {
+            if (_pricing.annualPassAddress.balanceOf(msg.sender) > 0) {
+                uint256 discount = _HUNDRED_PERCENT_AS_BPS - _pricing.annualPassDiscount;
+                uint256 annualPassPaymentAmount = (paymentAmount * discount) / _HUNDRED_PERCENT_AS_BPS; 
+
+                if (msg.value == annualPassPaymentAmount) {
+                    return (true);
+                }
+
+                return (false);
+            }
+        }
+
+        if (msg.value == paymentAmount) {
             return (true);
         }
 
@@ -414,6 +477,23 @@ contract ExpandedNFT is
 
         return currentToken;        
     }  
+
+    /**
+      @param annualPassAddress Annual pass ERC721 token address. Can be null if no token is in use.
+      @param lifetimePassAddress Lifetime pass ERC721 token address. Can be null if no token is in use.
+      @param annualPassDiscount Annual pass discount in BPS.
+      @param lifetimePassDiscount Lifetime pass discount in BPS.                                                                                 
+      @dev Set various pricing related values
+     */
+    function  updateDiscounts(address annualPassAddress, address lifetimePassAddress, uint256 annualPassDiscount, uint256 lifetimePassDiscount) external onlyOwner { 
+        require(annualPassDiscount <= _HUNDRED_PERCENT_AS_BPS, "Discount can not be greater than 100%");
+        require(lifetimePassDiscount <= _HUNDRED_PERCENT_AS_BPS, "Discount can not be greater than 100%");
+
+        _pricing.annualPassAddress = IERC721Upgradeable(annualPassAddress);
+        _pricing.lifetimePassAddress = IERC721Upgradeable(lifetimePassAddress);
+        _pricing.annualPassDiscount = annualPassDiscount; 
+        _pricing.lifetimePassDiscount = lifetimePassDiscount;    
+    }
 
     /**
       @param _royaltyBPS BPS of the royalty set on the contract. Can be 0 for no royalty.
@@ -627,7 +707,19 @@ contract ExpandedNFT is
         if (_pricing.whoCanMint == WhoCanMint.ALLOWLIST) {
             if (_pricing.allowListMinters[msg.sender]) {
                 return true;
-            }            
+            } 
+
+            if (address(_pricing.lifetimePassAddress) != address(0x0)) {
+                if (_pricing.lifetimePassAddress.balanceOf(msg.sender) > 0) {
+                    return (true);
+                }
+            }
+
+            if (address(_pricing.annualPassAddress) != address(0x0)) {
+                if (_pricing.annualPassAddress.balanceOf(msg.sender) > 0) {
+                    return (true);
+                }
+            }
         }
 
         return false;
