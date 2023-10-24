@@ -337,4 +337,35 @@ describe("Discounts", () => {
 
     await expect(minterContract.connect(user).mintEditions([signerAddress], { value: ethers.utils.parseEther("0.9") })).to.be.revertedWith("Wrong price");
   }); 
+
+  it("A pass holder can mint for free with 100% discount", async () => {
+    await minterContract.updateDiscounts(annualPassContract.address, lifetimePassContract.address, 10000, 10000); 
+
+    await annualPassContract.connect(user).mint(userAddress);    
+    await minterContract.setAllowedMinter(2);
+
+    expect(await minterContract.connect(user).mintEditions([signerAddress], { value: ethers.utils.parseEther("0") })).to.emit(minterContract, "EditionSold");
+ 
+    expect(await minterContract.totalSupply()).to.be.equal(1);
+    expect(await minterContract.getAllowListMintLimit()).to.be.equal(2);
+    expect(await minterContract.getGeneralMintLimit()).to.be.equal(1);
+    expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(9);     
+
+  });  
+
+  it("A pass holder can mint for the standard cost with 0% discount", async () => {
+    await minterContract.updateDiscounts(annualPassContract.address, lifetimePassContract.address, 0, 0); 
+
+    await annualPassContract.connect(user).mint(userAddress);    
+    await minterContract.setAllowedMinter(2);
+
+    expect(await minterContract.connect(user).mintEditions([signerAddress], { value: ethers.utils.parseEther("0.8") })).to.emit(minterContract, "EditionSold");
+ 
+    expect(await minterContract.totalSupply()).to.be.equal(1);
+    expect(await minterContract.getAllowListMintLimit()).to.be.equal(2);
+    expect(await minterContract.getGeneralMintLimit()).to.be.equal(1);
+    expect(await minterContract.getMintLimit(signerAddress)).to.be.equal(9);     
+
+  });  
+
 });
