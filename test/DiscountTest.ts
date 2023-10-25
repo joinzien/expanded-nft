@@ -32,9 +32,11 @@ describe("Discounts", () => {
   const mintCostAllowlist = ethers.utils.parseEther("0.4");
   const mintCostGeneral = ethers.utils.parseEther("0.8");
 
-  const hundreadPercentInBps = 10000;
-  const annualPassDiscountBps = 2500;
-  const lifetimePassDiscountBps = 5000;
+  const mintCostAllowlistLifetimePass = ethers.utils.parseEther("0.2");
+  const mintCostGeneralLifetimePass = ethers.utils.parseEther("0.4");
+
+  const mintCostAllowlistAnnualPass = ethers.utils.parseEther("0.3");
+  const mintCostGeneralAnnualPass = ethers.utils.parseEther("0.6");
 
   beforeEach(async () => {
     signer = (await ethers.getSigners())[0];
@@ -84,13 +86,22 @@ describe("Discounts", () => {
     lifetimePassContract.initialize();
 
     await minterContract.setPricing(10, 500, mintCostAllowlist, mintCostGeneral, 2, 1);  
-    await minterContract.updateDiscounts(annualPassContract.address, lifetimePassContract.address, annualPassDiscountBps, lifetimePassDiscountBps); 
+    const mintCostAllowlistLifetimePass = ethers.utils.parseEther("0.2");
+    const mintCostGeneralLifetimePass = ethers.utils.parseEther("0.4");
+  
+    const mintCostAllowlistAnnualPass = ethers.utils.parseEther("0.3");
+    const mintCostGeneralAnnualPass = ethers.utils.parseEther("0.6");
+
+
+    await minterContract.updateDiscounts(annualPassContract.address, lifetimePassContract.address, 
+      mintCostAllowlistAnnualPass,  mintCostGeneralAnnualPass, 
+      mintCostAllowlistLifetimePass, mintCostGeneralLifetimePass); 
   });
   
   it("A non pass holder can not mint while the drop is not for sale", async () => {
     await minterContract.setAllowedMinter(0);
 
-    await expect(minterContract.connect(user).mintEditions([signerAddress], { value: ethers.utils.parseEther("0.4") })).to.be.revertedWith("Needs to be an allowed minter");
+    await expect(minterContract.connect(user).mintEditions([signerAddress], { value: ethers.utils.parseEther("0.4") })).to.be.revertedWith("Needs to be an allowed minter");     
   });  
 
   it("A non pass holder can not mint while the drop is only for sale to allow listed wallets", async () => {
@@ -342,7 +353,7 @@ describe("Discounts", () => {
   }); 
 
   it("A pass holder can mint for free with 100% discount", async () => {
-    await minterContract.updateDiscounts(annualPassContract.address, lifetimePassContract.address, hundreadPercentInBps, hundreadPercentInBps); 
+    await minterContract.updateDiscounts(annualPassContract.address, lifetimePassContract.address, 0, 0, 0, 0); 
 
     await annualPassContract.connect(user).mint(userAddress);    
     await minterContract.setAllowedMinter(2);
@@ -357,8 +368,15 @@ describe("Discounts", () => {
   });  
 
   it("A pass holder can mint for the standard cost with 0% discount", async () => {
-    await minterContract.updateDiscounts(annualPassContract.address, lifetimePassContract.address, 0, 0); 
+    const mintCostAllowlistLifetimePass = ethers.utils.parseEther("0.4");
+    const mintCostGeneralLifetimePass = ethers.utils.parseEther("0.8");
+  
+    const mintCostAllowlistAnnualPass = ethers.utils.parseEther("0.4");
+    const mintCostGeneralAnnualPass = ethers.utils.parseEther("0.8");
 
+    await minterContract.updateDiscounts(annualPassContract.address, lifetimePassContract.address,  mintCostAllowlistAnnualPass, mintCostGeneralAnnualPass,
+      mintCostAllowlistLifetimePass, mintCostGeneralLifetimePass); 
+    
     await annualPassContract.connect(user).mint(userAddress);    
     await minterContract.setAllowedMinter(2);
 
