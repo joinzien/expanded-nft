@@ -67,7 +67,7 @@ describe("Drops", () => {
       "TEST",
       "http://example.com/token/",
       0, 
-      true)).to.be.revertedWith("Drop size must be > 0");
+      true)).to.be.revertedWith("InvalidDropSize");
   });
 
   it("Makes a new drop", async () => {
