@@ -44,6 +44,15 @@ contract ExpandedNFT is
     event ProductionComplete(uint256 tokenId);
     event DeliveryAccepted(uint256 tokenId);
 
+    // errors
+    error InvalidDropSize();
+    error InvalidTokenId(uint256 tokenId);    
+    error NotAllowedToMint(address minter);
+    error NotEnoughSupply(uint256 count);
+    error MintingTooMany(uint256 count, uint256 mintLimit);
+    error WrongPrice(uint256 price);
+    error LengthMismatch(uint256 tokens, uint256 wallets);
+
     /// @title EIP-721 Metadata Update Extension
 
     /// @dev This event emits when the metadata of a token is changed.
@@ -162,7 +171,9 @@ contract ExpandedNFT is
         uint256 _dropSize,
         bool randomMint
     ) public initializer {
-        require(_dropSize > 0, "Drop size must be > 0");
+        if (_dropSize == 0) {
+            revert InvalidDropSize();
+        }
 
         __ERC721_init(_name, _symbol);
         __Ownable_init();
@@ -324,8 +335,11 @@ contract ExpandedNFT is
       @dev returns the current state of the provided token
      */
     function redeemedState(uint256 tokenId) public view returns (uint256) {
-        require(tokenId > 0, "tokenID > 0");
-        require(tokenId <= dropSize, "tokenID <= drop size");
+        if (tokenId < 1) {
+            revert InvalidTokenId(tokenId);
+        } else if (tokenId > dropSize) {
+            revert InvalidTokenId(tokenId);
+        }
 
         return uint256(_perTokenMetadata[tokenId].state);
     }
@@ -458,12 +472,21 @@ contract ExpandedNFT is
     function _mintEditionsBody(address[] memory recipients)
         internal returns (uint256)
     {
-        require(_isAllowedToMint(), "Needs to be an allowed minter");
+        if (_isAllowedToMint() != true) {
+            revert NotAllowedToMint(msg.sender);
+        }
 
-        require(recipients.length <= numberCanMint(), "Exceeded supply");
-        require((_pricing.mintCounts[msg.sender] + recipients.length) <= _currentMintLimit(msg.sender), "Exceeded mint limit");
+        if (recipients.length > numberCanMint()) {
+            revert NotEnoughSupply(recipients.length);
+        }
 
-        require(_paymentAmountCorrect(recipients.length), "Wrong price");
+        if ((_pricing.mintCounts[msg.sender] + recipients.length) > _currentMintLimit(msg.sender))  {
+            revert MintingTooMany(recipients.length, _currentMintLimit(msg.sender));
+        }
+
+        if (_paymentAmountCorrect(recipients.length) != true) {
+            revert WrongPrice(msg.value);
+        }
 
         uint256 currentToken;
 
@@ -544,7 +567,9 @@ contract ExpandedNFT is
       @dev Reserve an edition for a wallet
      */
     function reserve (address[] calldata wallets, uint256[] calldata tokenIDs)  external onlyOwner {  
-        require(wallets.length == tokenIDs.length, "Lists length must match");
+        if (wallets.length != tokenIDs.length) {
+            revert LengthMismatch(tokenIDs.length, wallets.length);
+        }
 
         for (uint256 i = 0; i < wallets.length; i++) {
             require(_perTokenMetadata[tokenIDs[i]].state == ExpandedNFTStates.UNMINTED, "Needs to be unminted");

@@ -101,13 +101,13 @@ describe("Discounts", () => {
   it("A non pass holder can not mint while the drop is not for sale", async () => {
     await minterContract.setAllowedMinter(0);
 
-    await expect(minterContract.connect(user).mintEditions([signerAddress], { value: ethers.utils.parseEther("0.4") })).to.be.revertedWith("Needs to be an allowed minter");     
+    await expect(minterContract.connect(user).mintEditions([signerAddress], { value: ethers.utils.parseEther("0.4") })).to.be.revertedWith("NotAllowedToMint");     
   });  
 
   it("A non pass holder can not mint while the drop is only for sale to allow listed wallets", async () => {
     await minterContract.setAllowedMinter(1);
 
-    await expect(minterContract.connect(user).mintEditions([signerAddress], { value: ethers.utils.parseEther("0.4") })).to.be.revertedWith("Needs to be an allowed minter");
+    await expect(minterContract.connect(user).mintEditions([signerAddress], { value: ethers.utils.parseEther("0.4") })).to.be.revertedWith("NotAllowedToMint");
   });  
   
   it("A non pass holder can not mint while the drop is only for sale to all wallets", async () => {
@@ -128,7 +128,7 @@ describe("Discounts", () => {
 
     await minterContract.setAllowedMinter(0);
 
-    await expect(minterContract.connect(user).mintEditions([signerAddress], { value: ethers.utils.parseEther("0.4") })).to.be.revertedWith("Needs to be an allowed minter");
+    await expect(minterContract.connect(user).mintEditions([signerAddress], { value: ethers.utils.parseEther("0.4") })).to.be.revertedWith("NotAllowedToMint");
   });  
 
   it("A lifetime pass holder can mint while the drop is only for sale to allow listed wallets", async () => {
@@ -160,7 +160,7 @@ describe("Discounts", () => {
     await lifetimePassContract.connect(user).mint(userAddress);
     await minterContract.setAllowedMinter(1);
 
-    await expect(minterContract.connect(user).mintEditions([signerAddress], { value: ethers.utils.parseEther("0.9") })).to.be.revertedWith("Wrong price");
+    await expect(minterContract.connect(user).mintEditions([signerAddress], { value: ethers.utils.parseEther("0.9") })).to.be.revertedWith("WrongPrice");
   });  
 
   it("A lifetime pass holder can not mint while the drop is only for sale to all wallets", async () => {
@@ -194,14 +194,14 @@ describe("Discounts", () => {
     await lifetimePassContract.connect(user).mint(userAddress);
     await minterContract.setAllowedMinter(2);
 
-    await expect(minterContract.connect(user).mintEditions([signerAddress], { value: ethers.utils.parseEther("0.9") })).to.be.revertedWith("Wrong price");
+    await expect(minterContract.connect(user).mintEditions([signerAddress], { value: ethers.utils.parseEther("0.9") })).to.be.revertedWith("WrongPrice");
   });   
 
   it("A annual pass holder can not mint while the drop is not for sale", async () => {
     await annualPassContract.connect(user).mint(userAddress);
     await minterContract.setAllowedMinter(0);
 
-    await expect(minterContract.connect(user).mintEditions([signerAddress], { value: ethers.utils.parseEther("0.4") })).to.be.revertedWith("Needs to be an allowed minter");
+    await expect(minterContract.connect(user).mintEditions([signerAddress], { value: ethers.utils.parseEther("0.4") })).to.be.revertedWith("NotAllowedToMint");
   });  
 
   it("A annual pass holder can mint while the drop is only for sale to allow listed wallets", async () => {
@@ -233,7 +233,7 @@ describe("Discounts", () => {
     await annualPassContract.connect(user).mint(userAddress);
     await minterContract.setAllowedMinter(1);
 
-    await expect(minterContract.connect(user).mintEditions([signerAddress], { value: ethers.utils.parseEther("0.9") })).to.be.revertedWith("Wrong price");
+    await expect(minterContract.connect(user).mintEditions([signerAddress], { value: ethers.utils.parseEther("0.9") })).to.be.revertedWith("WrongPrice");
   });   
   
   it("A annual pass holder can not mint while the drop is only for sale to all wallets", async () => {
@@ -267,7 +267,7 @@ describe("Discounts", () => {
     await annualPassContract.connect(user).mint(userAddress);
     await minterContract.setAllowedMinter(2);
 
-    await expect(minterContract.connect(user).mintEditions([signerAddress], { value: ethers.utils.parseEther("0.9") })).to.be.revertedWith("Wrong price");
+    await expect(minterContract.connect(user).mintEditions([signerAddress], { value: ethers.utils.parseEther("0.9") })).to.be.revertedWith("WrongPrice");
   });    
 
   it("A annual and lifetime pass holder can not mint while the drop is not for sale", async () => {
@@ -275,7 +275,7 @@ describe("Discounts", () => {
     await lifetimePassContract.connect(user).mint(userAddress);  
     await minterContract.setAllowedMinter(0);
 
-    await expect(minterContract.connect(user).mintEditions([signerAddress], { value: ethers.utils.parseEther("0.4") })).to.be.revertedWith("Needs to be an allowed minter");
+    await expect(minterContract.connect(user).mintEditions([signerAddress], { value: ethers.utils.parseEther("0.4") })).to.be.revertedWith("NotAllowedToMint");
   });  
 
   it("A annual and lifetime pass holder can mint while the drop is only for sale to allow listed wallets", async () => {
@@ -311,7 +311,7 @@ describe("Discounts", () => {
     await lifetimePassContract.connect(user).mint(userAddress);  
     await minterContract.setAllowedMinter(1);
 
-    await expect(minterContract.connect(user).mintEditions([signerAddress], { value: ethers.utils.parseEther("0.4") })).to.be.revertedWith("Wrong price");
+    await expect(minterContract.connect(user).mintEditions([signerAddress], { value: ethers.utils.parseEther("0.4") })).to.be.revertedWith("WrongPrice");
   }); 
   
   it("A annual and lifetime pass holder can not mint while the drop is only for sale to all wallets", async () => {
@@ -349,7 +349,7 @@ describe("Discounts", () => {
     await lifetimePassContract.connect(user).mint(userAddress);  
     await minterContract.setAllowedMinter(2);
 
-    await expect(minterContract.connect(user).mintEditions([signerAddress], { value: ethers.utils.parseEther("0.9") })).to.be.revertedWith("Wrong price");
+    await expect(minterContract.connect(user).mintEditions([signerAddress], { value: ethers.utils.parseEther("0.9") })).to.be.revertedWith("WrongPrice");
   }); 
 
   it("A pass holder can mint for free with 100% discount", async () => {

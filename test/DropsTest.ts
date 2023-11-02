@@ -246,7 +246,7 @@ describe("Drops", () => {
         minterContract.mintEdition(signerAddress, {
           value: ethers.utils.parseEther("0.1")
         })
-      ).to.be.revertedWith("Exceeded supply");
+      ).to.be.revertedWith("NotEnoughSupply");
 
       expect(await minterContract.tokenURI(1)).to.be.equal("http://example.com/token/1.json");      
       expect(await minterContract.tokenURI(2)).to.be.equal("http://example.com/token/2.json");      
@@ -366,7 +366,7 @@ describe("Drops", () => {
         minterContract.mintEdition(signerAddress, {
           value: ethers.utils.parseEther("0.1")
         })
-      ).to.be.revertedWith("Exceeded supply");
+      ).to.be.revertedWith("NotEnoughSupply");
 
       expect(await minterContract.tokenURI(1)).to.be.equal("http://example.com/token/1.json");      
       expect(await minterContract.tokenURI(2)).to.be.equal("http://example.com/token/2.json");      

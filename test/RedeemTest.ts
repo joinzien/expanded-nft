@@ -108,11 +108,11 @@ describe("Redeem", () => {
   });
 
   it("Check the redeemed state an invalid edition. < 1", async () => {
-    await expect(minterContract.connect(user).redeemedState(0)).to.be.revertedWith("tokenID > 0"); 
+    await expect(minterContract.connect(user).redeemedState(0)).to.be.revertedWith("InvalidTokenId"); 
   });
 
   it("Check the redeemed state an invalid edition. > drop size", async () => {
-    await expect(minterContract.connect(user).redeemedState(11)).to.be.revertedWith("tokenID <= drop size"); 
+    await expect(minterContract.connect(user).redeemedState(11)).to.be.revertedWith("InvalidTokenId"); 
   });  
 
   it("Redeem  not as the owner", async () => {
