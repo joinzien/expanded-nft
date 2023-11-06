@@ -83,7 +83,7 @@ describe("Reservations", () => {
     expect(await minterContract.getReservationsCount(artistAddress)).to.be.equal(1);     
     expect((await minterContract.getReservationsList(artistAddress)).toString()).to.be.equal([1].toString()); 
 
-    await expect(minterContract.reserve([artistAddress], [1])).to.be.revertedWith("Needs to be unminted");
+    await expect(minterContract.reserve([artistAddress], [1])).to.be.revertedWith("Minted");
 
     expect(await minterContract.isReserved(1)).to.be.equal(true);
     expect(await minterContract.whoReserved(1)).to.be.equal(artistAddress);  

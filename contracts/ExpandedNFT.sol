@@ -52,6 +52,7 @@ contract ExpandedNFT is
     error MintingTooMany(uint256 count, uint256 mintLimit);
     error WrongPrice(uint256 price);
     error LengthMismatch(uint256 tokens, uint256 wallets);
+    error Minted(uint256 token);
 
     /// @title EIP-721 Metadata Update Extension
 
@@ -572,7 +573,9 @@ contract ExpandedNFT is
         }
 
         for (uint256 i = 0; i < wallets.length; i++) {
-            require(_perTokenMetadata[tokenIDs[i]].state == ExpandedNFTStates.UNMINTED, "Needs to be unminted");
+            if (_perTokenMetadata[tokenIDs[i]].state != ExpandedNFTStates.UNMINTED) {
+                revert Minted(i);
+            }
 
             _perTokenMetadata[tokenIDs[i]].reservedBy = wallets[i];
             _perTokenMetadata[tokenIDs[i]].state = ExpandedNFTStates.RESERVED;
