@@ -29,3 +29,4 @@ Based on the [Zora NFT Editions](https://github.com/ourzora/nft-editions) contra
 
 - [Sentimentite by Agnieszka Kurant](https://opensea.io/collection/sentimentite-by-agnieszka-kurant)
 - [Sea of Redemption](https://opensea.io/collection/sea-of-redemption)
+- [Chengan Xia x Zien](https://opensea.io/collection/chengan-xia-x-zien)
