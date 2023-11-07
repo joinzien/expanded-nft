@@ -316,7 +316,7 @@ describe("Metadata", () => {
         "http://example.com/token/05", "http://example.com/token/06",
         "http://example.com/token/07", "http://example.com/token/08",
         "http://example.com/token/09", "http://example.com/token/10"]
-    )).to.be.revertedWith("Data size mismatch");
+    )).to.be.revertedWith("SizeMismatch");
   });
 
   it("Update redeemed metadata, not as the owner", async () => {

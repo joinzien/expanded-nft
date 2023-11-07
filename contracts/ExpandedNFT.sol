@@ -52,6 +52,7 @@ contract ExpandedNFT is
     error MintingTooMany(uint256 count, uint256 mintLimit);
     error WrongPrice(uint256 price);
     error LengthMismatch(uint256 tokens, uint256 wallets);
+    error SizeMismatch(uint256 count, uint256 length);
     error MustBeUnminted(uint256 token);
     error NotReserved(uint256 token);
 
@@ -872,7 +873,9 @@ contract ExpandedNFT is
             revert InvalidTokenId(startIndex + count - 1);
         }
 
-        require(_mintedMetadataUrl.length == count, "Data size mismatch");
+        if (_mintedMetadataUrl.length != count) {
+            revert SizeMismatch(count, _mintedMetadataUrl.length);
+        }
 
         for (uint256 i = 0; i < count; i++) {
             uint256 index =  startIndex + i;
