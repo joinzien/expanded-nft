@@ -921,7 +921,10 @@ contract ExpandedNFT is
     }
 
     function productionStart(uint256 tokenId) public onlyOwner {
-        require(_exists(tokenId), "No token");        
+        if (_exists(tokenId) != true) {
+            revert InvalidTokenId(tokenId);
+        }
+      
         require((_perTokenMetadata[tokenId].state== ExpandedNFTStates.MINTED), "Wrong state");
 
         _perTokenMetadata[tokenId].state = ExpandedNFTStates.REDEEM_STARTED;
@@ -933,7 +936,10 @@ contract ExpandedNFT is
         uint256 tokenId,
         string memory _redeemedMetadataUrl              
     ) public onlyOwner {
-        require(_exists(tokenId), "No token");        
+        if (_exists(tokenId) != true) {
+            revert InvalidTokenId(tokenId);
+        }
+
         require((_perTokenMetadata[tokenId].state == ExpandedNFTStates.REDEEM_STARTED), "You currently can not redeem");
 
         _perTokenMetadata[tokenId].redeemedMetadataUrl = _redeemedMetadataUrl;
@@ -970,7 +976,9 @@ contract ExpandedNFT is
         override
         returns (string memory)
     {
-        require(_exists(tokenId), "No token");
+        if (_exists(tokenId) != true) {
+            revert InvalidTokenId(tokenId);
+        }
 
         if (_perTokenMetadata[tokenId].state == ExpandedNFTStates.REDEEMED) {
             return (_perTokenMetadata[tokenId].redeemedMetadataUrl);

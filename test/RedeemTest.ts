@@ -96,15 +96,15 @@ describe("Redeem", () => {
   });
 
   it("Redeem an invalid edition, < 1", async () => {
-    await expect(minterContract.productionStart(0)).to.be.revertedWith("No token"); 
+    await expect(minterContract.productionStart(0)).to.be.revertedWith("InvalidTokenId"); 
   });
 
   it("Redeem an invalid edition, > drop size", async () => {
-    await expect(minterContract.productionStart(11)).to.be.revertedWith("No token"); 
+    await expect(minterContract.productionStart(11)).to.be.revertedWith("InvalidTokenId"); 
   });  
 
   it("Redeem  with an invalid ID", async () => {
-    await expect(minterContract.productionStart(2)).to.be.revertedWith("No token"); 
+    await expect(minterContract.productionStart(2)).to.be.revertedWith("InvalidTokenId"); 
   });
 
   it("Check the redeemed state an invalid edition. < 1", async () => {
@@ -124,7 +124,7 @@ describe("Redeem", () => {
   });    
 
   it("Production complete with an invalid ID", async () => {
-    await expect(minterContract.productionComplete(2, "")).to.be.revertedWith("No token"); 
+    await expect(minterContract.productionComplete(2, "")).to.be.revertedWith("InvalidTokenId"); 
   });
 
   it("Production complete in the wrong state", async () => {

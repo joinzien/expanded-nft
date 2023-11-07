@@ -409,6 +409,6 @@ describe("Metadata", () => {
       dropResult
     )) as ExpandedNFT;
 
-    await expect(minterContract.tokenURI(0)).to.be.revertedWith("No token");
+    await expect(minterContract.tokenURI(0)).to.be.revertedWith("InvalidTokenId");
   });
 });
