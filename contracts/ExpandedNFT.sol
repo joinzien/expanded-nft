@@ -52,7 +52,8 @@ contract ExpandedNFT is
     error MintingTooMany(uint256 count, uint256 mintLimit);
     error WrongPrice(uint256 price);
     error LengthMismatch(uint256 tokens, uint256 wallets);
-    error Minted(uint256 token);
+    error MustBeUnminted(uint256 token);
+    error NotReserved(uint256 token);
 
     /// @title EIP-721 Metadata Update Extension
 
@@ -574,7 +575,7 @@ contract ExpandedNFT is
 
         for (uint256 i = 0; i < wallets.length; i++) {
             if (_perTokenMetadata[tokenIDs[i]].state != ExpandedNFTStates.UNMINTED) {
-                revert Minted(i);
+                revert MustBeUnminted(i);
             }
 
             _perTokenMetadata[tokenIDs[i]].reservedBy = wallets[i];
@@ -590,7 +591,9 @@ contract ExpandedNFT is
      */
     function unreserve (uint256[] calldata tokenIDs) external onlyOwner {  
         for (uint256 i = 0; i < tokenIDs.length; i++) {
-            require(_perTokenMetadata[tokenIDs[i]].state == ExpandedNFTStates.RESERVED, "Not reserved");
+            if (_perTokenMetadata[tokenIDs[i]].state != ExpandedNFTStates.RESERVED) {
+                revert NotReserved(i);
+            }
 
             address wallet = _perTokenMetadata[tokenIDs[i]].reservedBy;
             uint256 index = 0;
