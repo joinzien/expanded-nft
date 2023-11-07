@@ -866,8 +866,11 @@ contract ExpandedNFT is
         uint256 count,
         string[] memory _mintedMetadataUrl
     ) public onlyOwner {
-        require(startIndex > 0, "StartIndex > 0");
-        require(startIndex + count <= dropSize + 1, "Data large than drop size");
+        if (startIndex < 1) {
+            revert InvalidTokenId(startIndex);
+        } else if ((startIndex + count - 1) > dropSize) {
+            revert InvalidTokenId(startIndex + count - 1);
+        }
 
         require(_mintedMetadataUrl.length == count, "Data size mismatch");
 
