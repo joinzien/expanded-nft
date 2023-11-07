@@ -128,7 +128,7 @@ describe("Redeem", () => {
   });
 
   it("Production complete in the wrong state", async () => {
-    await expect(minterContract.productionComplete(1, "")).to.be.revertedWith("You currently can not redeem"); 
+    await expect(minterContract.productionComplete(1, "")).to.be.revertedWith("WrongState"); 
   });
 
   it("Redeem an edition more than once", async () => {
@@ -143,7 +143,7 @@ describe("Redeem", () => {
 
     expect(await minterContract.connect(user).redeemedState(1)).to.equal(ExpandedNFTState.REDEEMED); 
 
-    await expect(minterContract.productionStart(1)).to.be.revertedWith("Wrong state");
+    await expect(minterContract.productionStart(1)).to.be.revertedWith("WrongState");
   });  
 
   it("URLs and meta data should change when redeemed", async () => {

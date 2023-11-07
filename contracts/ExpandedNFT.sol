@@ -56,6 +56,7 @@ contract ExpandedNFT is
     error SizeMismatch(uint256 count, uint256 length);
     error MustBeUnminted(uint256 token);
     error NotReserved(uint256 token);
+    error WrongState(uint256 token, ExpandedNFTStates actual, ExpandedNFTStates expected);
 
     /// @title EIP-721 Metadata Update Extension
 
@@ -931,8 +932,10 @@ contract ExpandedNFT is
         if (_exists(tokenId) != true) {
             revert InvalidTokenId(tokenId);
         }
-      
-        require((_perTokenMetadata[tokenId].state== ExpandedNFTStates.MINTED), "Wrong state");
+
+        if (_perTokenMetadata[tokenId].state != ExpandedNFTStates.MINTED) {
+            revert WrongState(tokenId, _perTokenMetadata[tokenId].state, ExpandedNFTStates.MINTED);
+        }        
 
         _perTokenMetadata[tokenId].state = ExpandedNFTStates.REDEEM_STARTED;
 
@@ -947,7 +950,9 @@ contract ExpandedNFT is
             revert InvalidTokenId(tokenId);
         }
 
-        require((_perTokenMetadata[tokenId].state == ExpandedNFTStates.REDEEM_STARTED), "You currently can not redeem");
+        if (_perTokenMetadata[tokenId].state != ExpandedNFTStates.REDEEM_STARTED) {
+            revert WrongState(tokenId, _perTokenMetadata[tokenId].state, ExpandedNFTStates.REDEEM_STARTED);
+        }
 
         _perTokenMetadata[tokenId].redeemedMetadataUrl = _redeemedMetadataUrl;
        _perTokenMetadata[tokenId].state = ExpandedNFTStates.REDEEMED;
