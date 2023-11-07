@@ -49,6 +49,7 @@ contract ExpandedNFT is
     error InvalidTokenId(uint256 tokenId);    
     error NotAllowedToMint(address minter);
     error NotEnoughSupply(uint256 count);
+    error NotApproved(uint256 tokenId);  
     error MintingTooMany(uint256 count, uint256 mintLimit);
     error WrongPrice(uint256 price);
     error LengthMismatch(uint256 tokens, uint256 wallets);
@@ -919,7 +920,10 @@ contract ExpandedNFT is
         User burn function for token id 
      */
     function burn(uint256 tokenId) public {
-        require(_isApprovedOrOwner(_msgSender(), tokenId), "Not approved");
+        if (_isApprovedOrOwner(_msgSender(), tokenId) != true) {
+            revert NotApproved(tokenId);
+        }
+
         _burn(tokenId);
     }
 
