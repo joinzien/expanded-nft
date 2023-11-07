@@ -96,23 +96,23 @@ describe("Redeem", () => {
   });
 
   it("Redeem an invalid edition, < 1", async () => {
-    await expect(minterContract.productionStart(0)).to.be.revertedWith("No token"); 
+    await expect(minterContract.productionStart(0)).to.be.revertedWith("InvalidTokenId"); 
   });
 
   it("Redeem an invalid edition, > drop size", async () => {
-    await expect(minterContract.productionStart(11)).to.be.revertedWith("No token"); 
+    await expect(minterContract.productionStart(11)).to.be.revertedWith("InvalidTokenId"); 
   });  
 
   it("Redeem  with an invalid ID", async () => {
-    await expect(minterContract.productionStart(2)).to.be.revertedWith("No token"); 
+    await expect(minterContract.productionStart(2)).to.be.revertedWith("InvalidTokenId"); 
   });
 
   it("Check the redeemed state an invalid edition. < 1", async () => {
-    await expect(minterContract.connect(user).redeemedState(0)).to.be.revertedWith("tokenID > 0"); 
+    await expect(minterContract.connect(user).redeemedState(0)).to.be.revertedWith("InvalidTokenId"); 
   });
 
   it("Check the redeemed state an invalid edition. > drop size", async () => {
-    await expect(minterContract.connect(user).redeemedState(11)).to.be.revertedWith("tokenID <= drop size"); 
+    await expect(minterContract.connect(user).redeemedState(11)).to.be.revertedWith("InvalidTokenId"); 
   });  
 
   it("Redeem  not as the owner", async () => {
@@ -124,11 +124,11 @@ describe("Redeem", () => {
   });    
 
   it("Production complete with an invalid ID", async () => {
-    await expect(minterContract.productionComplete(2, "")).to.be.revertedWith("No token"); 
+    await expect(minterContract.productionComplete(2, "")).to.be.revertedWith("InvalidTokenId"); 
   });
 
   it("Production complete in the wrong state", async () => {
-    await expect(minterContract.productionComplete(1, "")).to.be.revertedWith("You currently can not redeem"); 
+    await expect(minterContract.productionComplete(1, "")).to.be.revertedWith("WrongState"); 
   });
 
   it("Redeem an edition more than once", async () => {
@@ -143,7 +143,7 @@ describe("Redeem", () => {
 
     expect(await minterContract.connect(user).redeemedState(1)).to.equal(ExpandedNFTState.REDEEMED); 
 
-    await expect(minterContract.productionStart(1)).to.be.revertedWith("Wrong state");
+    await expect(minterContract.productionStart(1)).to.be.revertedWith("WrongState");
   });  
 
   it("URLs and meta data should change when redeemed", async () => {

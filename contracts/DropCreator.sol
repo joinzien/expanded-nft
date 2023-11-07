@@ -16,6 +16,8 @@ import {ExpandedNFT} from "./ExpandedNFT.sol";
 contract DropCreator {
     using CountersUpgradeable for CountersUpgradeable.Counter;
 
+    error InvalidDropSize();
+
     /// Counter for current contract id upgraded
     CountersUpgradeable.Counter private _atContract;
 
@@ -45,7 +47,9 @@ contract DropCreator {
         uint256 _dropSize,
         bool randomMint
     ) external returns (uint256) {
-        require(_dropSize > 0, "Drop size must be > 0");
+        if (_dropSize == 0) {
+            revert InvalidDropSize();
+        }
 
         address newContract = ClonesUpgradeable.cloneDeterministic(
             implementation,

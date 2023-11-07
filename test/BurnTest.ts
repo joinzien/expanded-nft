@@ -84,6 +84,6 @@ describe("Burn", () => {
     expect(await minterContract.ownerOf(1)).to.equal(
       await signer.getAddress()
     );
-    await expect(minterContract.connect(artist).burn(1)).to.be.revertedWith("Not approved");
+    await expect(minterContract.connect(artist).burn(1)).to.be.revertedWith("NotApproved");
   });
 });

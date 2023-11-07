@@ -23,7 +23,7 @@
     "coverage": "npm run typechain && hardhat coverage",
     "build": "yarn run prepack",
     "prepack": "hardhat compile",
-    "lint": "npx solhint 'contracts/**/*.sol' --fix && npx prettier '**/*.{json,md}' --write",
+    "lint": "npx solhint 'contracts/**/*.sol' && npx prettier '**/*.{json,md}' --write",
     "size": "yarn hardhat size-contracts",
     "verify": "yarn hardhat sourcify --network goerli  && yarn hardhat etherscan-verify --network goerli"
   },

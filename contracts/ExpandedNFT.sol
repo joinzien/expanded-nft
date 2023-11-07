@@ -44,6 +44,20 @@ contract ExpandedNFT is
     event ProductionComplete(uint256 tokenId);
     event DeliveryAccepted(uint256 tokenId);
 
+    // errors
+    error InvalidDropSize();
+    error InvalidTokenId(uint256 tokenId);    
+    error NotAllowedToMint(address minter);
+    error NotEnoughSupply(uint256 count);
+    error NotApproved(uint256 tokenId);  
+    error MintingTooMany(uint256 count, uint256 mintLimit);
+    error WrongPrice(uint256 price);
+    error LengthMismatch(uint256 tokens, uint256 wallets);
+    error SizeMismatch(uint256 count, uint256 length);
+    error MustBeUnminted(uint256 token);
+    error NotReserved(uint256 token);
+    error WrongState(uint256 token, ExpandedNFTStates actual, ExpandedNFTStates expected);
+
     /// @title EIP-721 Metadata Update Extension
 
     /// @dev This event emits when the metadata of a token is changed.
@@ -162,7 +176,9 @@ contract ExpandedNFT is
         uint256 _dropSize,
         bool randomMint
     ) public initializer {
-        require(_dropSize > 0, "Drop size must be > 0");
+        if (_dropSize == 0) {
+            revert InvalidDropSize();
+        }
 
         __ERC721_init(_name, _symbol);
         __Ownable_init();
@@ -324,8 +340,11 @@ contract ExpandedNFT is
       @dev returns the current state of the provided token
      */
     function redeemedState(uint256 tokenId) public view returns (uint256) {
-        require(tokenId > 0, "tokenID > 0");
-        require(tokenId <= dropSize, "tokenID <= drop size");
+        if (tokenId < 1) {
+            revert InvalidTokenId(tokenId);
+        } else if (tokenId > dropSize) {
+            revert InvalidTokenId(tokenId);
+        }
 
         return uint256(_perTokenMetadata[tokenId].state);
     }
@@ -426,7 +445,7 @@ contract ExpandedNFT is
         internal returns (uint256)
     {
         if (_randomMint) {
-            uint256 random = uint(keccak256(abi.encodePacked(msg.sender,block.prevrandao,gasleft()))) % dropSize;
+            uint256 random = uint256(keccak256(abi.encodePacked(msg.sender,block.prevrandao,gasleft()))) % dropSize;
             uint256 randomIndex = 1 + random;
 
             while (_perTokenMetadata[randomIndex].state != ExpandedNFTStates.UNMINTED) {
@@ -458,12 +477,21 @@ contract ExpandedNFT is
     function _mintEditionsBody(address[] memory recipients)
         internal returns (uint256)
     {
-        require(_isAllowedToMint(), "Needs to be an allowed minter");
+        if (_isAllowedToMint() != true) {
+            revert NotAllowedToMint(msg.sender);
+        }
 
-        require(recipients.length <= numberCanMint(), "Exceeded supply");
-        require((_pricing.mintCounts[msg.sender] + recipients.length) <= _currentMintLimit(msg.sender), "Exceeded mint limit");
+        if (recipients.length > numberCanMint()) {
+            revert NotEnoughSupply(recipients.length);
+        }
 
-        require(_paymentAmountCorrect(recipients.length), "Wrong price");
+        if ((_pricing.mintCounts[msg.sender] + recipients.length) > _currentMintLimit(msg.sender))  {
+            revert MintingTooMany(recipients.length, _currentMintLimit(msg.sender));
+        }
+
+        if (_paymentAmountCorrect(recipients.length) != true) {
+            revert WrongPrice(msg.value);
+        }
 
         uint256 currentToken;
 
@@ -544,10 +572,14 @@ contract ExpandedNFT is
       @dev Reserve an edition for a wallet
      */
     function reserve (address[] calldata wallets, uint256[] calldata tokenIDs)  external onlyOwner {  
-        require(wallets.length == tokenIDs.length, "Lists length must match");
+        if (wallets.length != tokenIDs.length) {
+            revert LengthMismatch(tokenIDs.length, wallets.length);
+        }
 
         for (uint256 i = 0; i < wallets.length; i++) {
-            require(_perTokenMetadata[tokenIDs[i]].state == ExpandedNFTStates.UNMINTED, "Needs to be unminted");
+            if (_perTokenMetadata[tokenIDs[i]].state != ExpandedNFTStates.UNMINTED) {
+                revert MustBeUnminted(i);
+            }
 
             _perTokenMetadata[tokenIDs[i]].reservedBy = wallets[i];
             _perTokenMetadata[tokenIDs[i]].state = ExpandedNFTStates.RESERVED;
@@ -562,7 +594,9 @@ contract ExpandedNFT is
      */
     function unreserve (uint256[] calldata tokenIDs) external onlyOwner {  
         for (uint256 i = 0; i < tokenIDs.length; i++) {
-            require(_perTokenMetadata[tokenIDs[i]].state == ExpandedNFTStates.RESERVED, "Not reserved");
+            if (_perTokenMetadata[tokenIDs[i]].state != ExpandedNFTStates.RESERVED) {
+                revert NotReserved(i);
+            }
 
             address wallet = _perTokenMetadata[tokenIDs[i]].reservedBy;
             uint256 index = 0;
@@ -835,13 +869,18 @@ contract ExpandedNFT is
         uint256 count,
         string[] memory _mintedMetadataUrl
     ) public onlyOwner {
-        require(startIndex > 0, "StartIndex > 0");
-        require(startIndex + count <= dropSize + 1, "Data large than drop size");
+        if (startIndex < 1) {
+            revert InvalidTokenId(startIndex);
+        } else if ((startIndex + count - 1) > dropSize) {
+            revert InvalidTokenId(startIndex + count - 1);
+        }
 
-        require(_mintedMetadataUrl.length == count, "Data size mismatch");
+        if (_mintedMetadataUrl.length != count) {
+            revert SizeMismatch(count, _mintedMetadataUrl.length);
+        }
 
-        for (uint i = 0; i < count; i++) {
-            uint index =  startIndex + i;
+        for (uint256 i = 0; i < count; i++) {
+            uint256 index =  startIndex + i;
             
             _perTokenMetadata[index].mintedMetadataUrl =_mintedMetadataUrl[i];
 
@@ -861,8 +900,11 @@ contract ExpandedNFT is
         string memory _redeemedMetadataUrl
 
     ) public onlyOwner {
-        require(tokenID > 0, "tokenID > 0");
-        require(tokenID <= dropSize, "tokenID <= drop size");
+        if (tokenID < 1) {
+            revert InvalidTokenId(tokenID);
+        } else if (tokenID > dropSize) {
+            revert InvalidTokenId(tokenID);
+        }
 
         _perTokenMetadata[tokenID].redeemedMetadataUrl = _redeemedMetadataUrl;
 
@@ -879,13 +921,21 @@ contract ExpandedNFT is
         User burn function for token id 
      */
     function burn(uint256 tokenId) public {
-        require(_isApprovedOrOwner(_msgSender(), tokenId), "Not approved");
+        if (_isApprovedOrOwner(_msgSender(), tokenId) != true) {
+            revert NotApproved(tokenId);
+        }
+
         _burn(tokenId);
     }
 
     function productionStart(uint256 tokenId) public onlyOwner {
-        require(_exists(tokenId), "No token");        
-        require((_perTokenMetadata[tokenId].state== ExpandedNFTStates.MINTED), "Wrong state");
+        if (_exists(tokenId) != true) {
+            revert InvalidTokenId(tokenId);
+        }
+
+        if (_perTokenMetadata[tokenId].state != ExpandedNFTStates.MINTED) {
+            revert WrongState(tokenId, _perTokenMetadata[tokenId].state, ExpandedNFTStates.MINTED);
+        }        
 
         _perTokenMetadata[tokenId].state = ExpandedNFTStates.REDEEM_STARTED;
 
@@ -896,8 +946,13 @@ contract ExpandedNFT is
         uint256 tokenId,
         string memory _redeemedMetadataUrl              
     ) public onlyOwner {
-        require(_exists(tokenId), "No token");        
-        require((_perTokenMetadata[tokenId].state == ExpandedNFTStates.REDEEM_STARTED), "You currently can not redeem");
+        if (_exists(tokenId) != true) {
+            revert InvalidTokenId(tokenId);
+        }
+
+        if (_perTokenMetadata[tokenId].state != ExpandedNFTStates.REDEEM_STARTED) {
+            revert WrongState(tokenId, _perTokenMetadata[tokenId].state, ExpandedNFTStates.REDEEM_STARTED);
+        }
 
         _perTokenMetadata[tokenId].redeemedMetadataUrl = _redeemedMetadataUrl;
        _perTokenMetadata[tokenId].state = ExpandedNFTStates.REDEEMED;
@@ -933,7 +988,9 @@ contract ExpandedNFT is
         override
         returns (string memory)
     {
-        require(_exists(tokenId), "No token");
+        if (_exists(tokenId) != true) {
+            revert InvalidTokenId(tokenId);
+        }
 
         if (_perTokenMetadata[tokenId].state == ExpandedNFTStates.REDEEMED) {
             return (_perTokenMetadata[tokenId].redeemedMetadataUrl);

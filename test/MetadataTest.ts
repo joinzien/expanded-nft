@@ -88,7 +88,7 @@ describe("Metadata", () => {
         "http://example.com/token/05", "http://example.com/token/06",
         "http://example.com/token/07", "http://example.com/token/08",
         "http://example.com/token/09", "http://example.com/token/10"]
-    )).to.be.revertedWith("StartIndex > 0");
+    )).to.be.revertedWith("InvalidTokenId");
   });
 
   it("Update metadata over the ending index", async () => {
@@ -112,7 +112,7 @@ describe("Metadata", () => {
         "http://example.com/token/05", "http://example.com/token/06",
         "http://example.com/token/07", "http://example.com/token/08",
         "http://example.com/token/09", "http://example.com/token/10"]
-    )).to.be.revertedWith("Data large than drop size");
+    )).to.be.revertedWith("InvalidTokenId");
   });
 
   it("Update metadata", async () => {
@@ -316,7 +316,7 @@ describe("Metadata", () => {
         "http://example.com/token/05", "http://example.com/token/06",
         "http://example.com/token/07", "http://example.com/token/08",
         "http://example.com/token/09", "http://example.com/token/10"]
-    )).to.be.revertedWith("Data size mismatch");
+    )).to.be.revertedWith("SizeMismatch");
   });
 
   it("Update redeemed metadata, not as the owner", async () => {
@@ -354,7 +354,7 @@ describe("Metadata", () => {
 
     await expect(minterContract.updateRedeemedMetadata(
       0, "https://example.com/redeemed/0001"
-    )).to.be.revertedWith("tokenID > 0");
+    )).to.be.revertedWith("InvalidTokenId");
   });
 
   it("Update redeemed metadata over the ending index", async () => {
@@ -373,7 +373,7 @@ describe("Metadata", () => {
 
     await expect(minterContract.updateRedeemedMetadata(
       11, "https://example.com/redeemed/0001"
-    )).to.be.revertedWith("tokenID <= drop size");
+    )).to.be.revertedWith("InvalidTokenId");
   });
 
   it("Update redeemed metadata", async () => {
@@ -409,6 +409,6 @@ describe("Metadata", () => {
       dropResult
     )) as ExpandedNFT;
 
-    await expect(minterContract.tokenURI(0)).to.be.revertedWith("No token");
+    await expect(minterContract.tokenURI(0)).to.be.revertedWith("InvalidTokenId");
   });
 });
