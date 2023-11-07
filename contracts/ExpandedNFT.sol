@@ -895,8 +895,11 @@ contract ExpandedNFT is
         string memory _redeemedMetadataUrl
 
     ) public onlyOwner {
-        require(tokenID > 0, "tokenID > 0");
-        require(tokenID <= dropSize, "tokenID <= drop size");
+        if (tokenID < 1) {
+            revert InvalidTokenId(tokenID);
+        } else if (tokenID > dropSize) {
+            revert InvalidTokenId(tokenID);
+        }
 
         _perTokenMetadata[tokenID].redeemedMetadataUrl = _redeemedMetadataUrl;
 
