@@ -40,7 +40,7 @@
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
     "chai": "^4.3.10",
-    "data-urls": "^4.0.0",
+    "data-urls": "^5.0.0",
     "dotenv": "^16.3.1",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^9.0.0",
