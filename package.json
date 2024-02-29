@@ -62,7 +62,7 @@
     "typescript": "^5.3.2"
   },
   "dependencies": {
-    "@openzeppelin/contracts-upgradeable": "^4.9.3",
+    "@openzeppelin/contracts-upgradeable": "^4.9.6",
     "base64-sol": "^1.1.0",
     "ethers": "^5.7.1",
     "yarn": "^1.22.21"
